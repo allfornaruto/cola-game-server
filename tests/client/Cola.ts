@@ -1,0 +1,170 @@
+import * as pinus from "./PinusForEgret";
+import { Cola } from "../../types/Cola";
+
+export default class ColaClient {
+  private gameId: string;
+  private client: pinus.WSClient;
+  private debug: boolean;
+  private playerInfo: Cola.PlayerInfo;
+  private gateHost: string;
+  private gatePort: number;
+  private connectorHost: string;
+  private connectorPort: number;
+
+  constructor(params: Cola.Init, options?: Cola.ColaOptions){
+    this.gameId = params.gameId;
+    this.playerInfo = params.playerInfo;
+    this.gateHost = params.gateHost;
+    this.gatePort = params.gatePort;
+    this.client = new pinus.WSClient();
+    if (!!options) {
+      this.debug = Boolean(options.debug);
+    }
+  }
+
+  /**
+   * Cola事件监听处理
+   * @param event
+   * @param cb
+   */
+  public listen(event: Cola.Event, cb: (e: any) => void) {
+    this.client.on(event, data => {
+      cb(data);
+    });
+  }
+
+  /**
+   * 进入游戏大厅
+   */
+  public async enterHall(): Promise<void> {
+    try {
+      const { host, port } = await this.getConnector();
+      this.connectorHost = host;
+      this.connectorPort = port;
+      await this.startConnectToHall();
+    } catch (e) {
+      console.error(e);
+    }
+  }
+
+  /**
+   * 创建房间
+   * @param {Cola.Params.CreateRoom} params
+   */
+  public createRoom(params: Cola.Params.CreateRoom): Promise<Cola.Room> {
+    return new Promise((resolve, reject) => {
+      const requestData: Cola.Request.CreateRoomMsg = {
+        gameId: this.gameId,
+        name: params.name,
+        type: params.type,
+        createType: params.createType,
+        maxPlayers: params.maxPlayers,
+        isPrivate: params.isPrivate,
+        customProperties: params.customProperties,
+        teamList: params.teamList
+      };
+      this.client.request("game.gameHandler.createRoom", requestData, (res: Cola.Response.CreateRoom) => {
+        if (res.code === 200){
+          resolve(res.data);
+        } else {
+          reject(res);
+        }
+      });
+    });
+  }
+
+  /**
+   * 进入房间
+   * @param roomName
+   */
+  public enterRoom(rid: string): Promise<Cola.Room> {
+    return new Promise((resolve, reject) => {
+      const requestData: Cola.Request.EnterRoomMsg = { rid };
+      this.client.request("game.gameHandler.enterRoom", requestData, (res: Cola.Response.EnterRoom) => {
+        if (res.code === 200){
+          resolve(res.data);
+        } else {
+          reject(res);
+        }
+      });
+    })
+  }
+
+  /**
+   * 离开房间
+   * @param roomName
+   */
+  public leaveRoom(rid: string) {
+    const requestData: Cola.Request.LeaveRoomMsg = { rid };
+    this.client.notify("game.gameHandler.leaveRoom", requestData);
+  }
+
+  /**
+   * 在房间内发送消息给指定用户
+   * @param uidList 用户uid数组
+   * @param content 发送内容
+   */
+  public sendMsg(uidList: string[], content: string): Promise<Cola.Status> {
+    return new Promise((resolve, _) => {
+      const requestData: Cola.Request.SendToClient = { uidList, content };
+      this.client.request("game.gameHandler.sendToClient", requestData, (res: Cola.Response.SendToClient) => {
+        if (res.code === 200){
+          resolve(res.data);
+        }
+      });
+    });
+  }
+
+  /**
+   * 与服务器断开连接
+   */
+  public async close(): Promise<Cola.Status> {
+    const status = await this.client.disconnect();
+    return { status };
+  }
+
+  /**
+   * 通过gate服务器查询分配的connector服务器
+   */
+  private getConnector(): Promise<Cola.Connector> {
+    return new Promise ((resolve, reject) => {
+      this.client.init({
+        host: this.gateHost,
+        port: this.gatePort,
+        log: this.debug,
+      },
+      () => {
+        const requestData: Cola.Request.GetConnectorEntry = this.playerInfo.uid;
+        this.client.request("gate.gateHandler.getConnectorEntry", requestData, (res: Cola.Response.GateGetConnectorEntry) => {
+          if (res.code === 200) {
+            resolve(res.data);
+          } else {
+            reject(res);
+          }
+        })
+      });
+    })
+  }
+
+  /**
+   * 连接上connector服务器，并进入大厅
+   */
+  private startConnectToHall(): Promise<void> {
+    return new Promise((resolve, reject) => {
+      this.client.init({
+        host: this.connectorHost,
+        port: this.connectorPort,
+        log: this.debug,
+        }, () => {
+        const requestData: Cola.Request.ConnectorEnter = this.playerInfo;
+        this.client.request("connector.entryHandler.enter", requestData, (res: Cola.Response.ConnectorEnter) => {
+          if (res.code === 200){
+            resolve();
+          } else {
+            reject(res);
+          }
+        });
+      });
+    });
+  }
+}

@@ -1,0 +1,32 @@
+root = true
+
+[*]
+end_of_line = LF
+charset = utf-8
+indent_style = space
+indent_size = 2
+tab_width = 2
+#是否在文件的最后插入一个空行
+insert_final_newline = true
+#是否删除行尾的空格
+trim_trailing_whitespace = true
+
+[*.json]
+indent_style = space
+indent_size = 2
+
+[*.{yml,yaml}]
+indent_style = space
+indent_size = 2
+
+[*.md]
+indent_style = tab
+indent_size = 2
+
+[*.sql]
+indent_style = tab
+indent_size = 2
+
+[*.test.ts]
+indent_style = space
+indent_size = 2
