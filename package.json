@@ -1,7 +1,12 @@
 {
   "name": "cola-game-server",
+  "description": "A gameServer based on NodeJS Pinus Framework",
   "version": "1.0.0",
   "private": false,
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/allfornaruto/cola-game-server"
+  },
   "bin": {
     "$": "./dist/bin/app.js"
   },

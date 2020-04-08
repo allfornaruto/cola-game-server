@@ -75,7 +75,7 @@ export default class ColaClient {
 
   /**
    * 进入房间
-   * @param roomName
+   * @param {string} rid 房间id
    */
   public enterRoom(rid: string): Promise<Cola.Room> {
     return new Promise((resolve, reject) => {
@@ -101,8 +101,8 @@ export default class ColaClient {
 
   /**
    * 在房间内发送消息给指定用户
-   * @param uidList 用户uid数组
-   * @param content 发送内容
+   * @param {string[]} uidList 用户uid数组
+   * @param {string} content 发送内容
    */
   public sendMsg(uidList: string[], content: string): Promise<Cola.Status> {
     return new Promise((resolve, _) => {

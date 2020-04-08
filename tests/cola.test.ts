@@ -23,8 +23,7 @@ const playerInfoB: Cola.PlayerInfo = {
   customProfile: JSON.stringify({ hp: 120, mp: 60 }),
   matchAttributes: []
 };
-const myRoom: Cola.Request.CreateRoomMsg = {
-  gameId: "dnf",
+const myRoom: Cola.Params.CreateRoom = {
   name: "room-1977",
   type: "0",
   createType: 0,
@@ -96,7 +95,7 @@ test("用户A创建房间room-1977，用户B在大厅监听该房间的创建", 
   // 用户B监听用户A创建房间事件
   colaB.listen("onRoomCreate", async (event: Cola.EventRes.OnRoomCreate) => {
     console.log('>>>>>>>>>>>>>>>colaB ColaEvent[onRoomCreate]', JSON.stringify(event));
-    expect(event.gameId).toBe(myRoom.gameId);
+    expect(event.gameId).toBe(playerInfoA.gameId);
     expect(event.name).toBe(myRoom.name);
     expect(event.type).toBe(myRoom.type);
     expect(event.createType).toBe(myRoom.createType);
@@ -121,7 +120,7 @@ test("用户A创建房间room-1977，用户B在大厅监听该房间的创建", 
   await colaB.enterHall();
   const roomInfo: Cola.Room = await colaA.createRoom(myRoom);
   console.log(`roomInfo = ${JSON.stringify(roomInfo)}`);
-  expect(roomInfo.gameId).toBe(myRoom.gameId);
+  expect(roomInfo.gameId).toBe(playerInfoA.gameId);
   expect(roomInfo.name).toBe(myRoom.name);
   expect(roomInfo.type).toBe(myRoom.type);
   expect(roomInfo.createType).toBe(myRoom.createType);
@@ -164,7 +163,7 @@ test("用户A创建房间room-1977，用户B进入该房间，用户A监听用�
   colaB.listen("onRoomCreate", async (event: Cola.EventRes.OnRoomCreate) => {
     console.log('>>>>>>>>>>>>>>>colaB ColaEvent[onRoomCreate]', JSON.stringify(event));
     rid = event.rid;
-    const roomInfo = await colaB.enterRoom(rid);
+    const roomInfo: Cola.Room = await colaB.enterRoom(rid);
     console.log(`roomInfo = ${JSON.stringify(roomInfo)}`);
     expect(roomInfo.playerList.length).toBe(2);
     expect(roomInfo.playerList[0]).toMatchObject(playerInfoA);
@@ -191,7 +190,7 @@ test("用户A创建房间room-1977，用户B进入该房间，用户A发送消�
     expect(event.customProfile).toBe(playerInfoB.customProfile);
     expect(event.matchAttributes).toStrictEqual(playerInfoB.matchAttributes);
     // 用户A发送消息
-    const sendResult = await colaA.sendMsg(["222222"], "Hello colaB");
+    const sendResult: Cola.Status = await colaA.sendMsg(["222222"], "Hello colaB");
     expect(sendResult.status).toBeTruthy();
   });
   // 用户B监听用户A创建房间事件

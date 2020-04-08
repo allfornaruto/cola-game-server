@@ -124,7 +124,7 @@ export namespace Cola {
      * @name 房间内玩家聊天消息事件
      * @field {string} msg  消息内容
      * @field {string} from  消息发送者uid
-     * @field {string[]} target  消息接受者uid数组
+     * @field {string[]} target  消息接收者uid数组
      */
     export interface OnChat {
       msg: string;
@@ -313,8 +313,7 @@ export namespace Cola {
    */
   export enum CreateRoomType {
     COMMON_CREATE = 0,
-    MATCH_CREATE = 1,
-    THIRD_PARTY_CREATE = 2
+    MATCH_CREATE = 1
   }
   /**
    * @name 房间帧同步状态
@@ -339,7 +338,7 @@ export namespace Cola {
     RELAY_ONLINE = 3
   }
   /**
-   * @name 队伍信息
+   * @name 团队属性
    * @field {string} id  队伍ID
    * @field {string} name  队伍名称
    * @field {number} minPlayers  队伍最小人数
