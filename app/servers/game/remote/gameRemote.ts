@@ -18,17 +18,17 @@ export class GameRemote {
 
   /**
    * 将用户加入大厅channel
-   * @param playerInfo 玩家信息
-   * @param gameId gameId作为大厅channel
+   * @param {Cola.PlayerInitInfo} playerInfo 玩家初始化信息
+   * @param {string} gameId gameId作为大厅channel
    * @param {String} serverId Frontend Server Id
    */
-  public async addToHall(playerInfo: Cola.PlayerInfo, gameId: string, serverId: string): Promise<Cola.Status> {
+  public async addToHall(playerInfo: Cola.PlayerInitInfo, gameId: string, serverId: string): Promise<Cola.Status> {
     return new Promise((resolve, _) => {
       console.log(`gameRemote addToHall playerInfo = ${JSON.stringify(playerInfo)} gameId = ${gameId} serverId = ${serverId}`);
       let flag = true;
       try {
         let channel = this.channelService.getChannel(gameId, true);
-        const param: Cola.EventRes.OnRoomAdd = playerInfo;
+        const param: Cola.EventRes.OnHallAdd = playerInfo;
         channel.pushMessage('onHallAdd', param);
         channel.add(playerInfo.uid, serverId);
       } catch (e) {

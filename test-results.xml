@@ -1,19 +1,19 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<testsuites name="jest tests" tests="7" failures="0" time="16.994">
-  <testsuite name="undefined" errors="0" failures="0" skipped="0" timestamp="2020-04-08T09:57:27" time="16.085" tests="7">
-    <testcase classname=" 用户A创建房间room-1977，用户B在大厅监听该房间的创建" name=" 用户A创建房间room-1977，用户B在大厅监听该房间的创建" time="5.583">
+<testsuites name="jest tests" tests="7" failures="0" time="18.315">
+  <testsuite name="undefined" errors="0" failures="0" skipped="0" timestamp="2020-04-09T11:26:31" time="17.71" tests="7">
+    <testcase classname=" 用户A创建房间room-1977，用户B在大厅监听该房间的创建" name=" 用户A创建房间room-1977，用户B在大厅监听该房间的创建" time="5.668">
     </testcase>
-    <testcase classname=" 用户A创建房间room-1977，用户B进入该房间，用户A监听用户B进入/离开房间的事件" name=" 用户A创建房间room-1977，用户B进入该房间，用户A监听用户B进入/离开房间的事件" time="1.348">
+    <testcase classname=" 用户A创建房间room-1977，用户B进入该房间，用户A监听用户B进入/离开房间的事件" name=" 用户A创建房间room-1977，用户B进入该房间，用户A监听用户B进入/离开房间的事件" time="1.477">
     </testcase>
-    <testcase classname=" 用户A创建房间room-1977，用户B进入该房间，用户A发送消息，用户B监听消息" name=" 用户A创建房间room-1977，用户B进入该房间，用户A发送消息，用户B监听消息" time="1.366">
+    <testcase classname=" 用户A创建房间room-1977，用户B进入该房间，用户A发送消息，用户B监听消息" name=" 用户A创建房间room-1977，用户B进入该房间，用户A发送消息，用户B监听消息" time="1.365">
     </testcase>
-    <testcase classname=" 用户A创建房间room-1977，用户B进入该房间，房主（用户A）修改房间信息，用户B监听房间修改消息，用户B尝试修改房间信息，由于用户B不是房主，所以修改信息失败" name=" 用户A创建房间room-1977，用户B进入该房间，房主（用户A）修改房间信息，用户B监听房间修改消息，用户B尝试修改房间信息，由于用户B不是房主，所以修改信息失败" time="0.017">
+    <testcase classname=" 用户A创建房间room-1977，用户B进入该房间，房主（用户A）修改房间信息，用户B监听房间修改消息，用户B尝试修改房间信息，由于用户B不是房主，所以修改信息失败" name=" 用户A创建房间room-1977，用户B进入该房间，房主（用户A）修改房间信息，用户B监听房间修改消息，用户B尝试修改房间信息，由于用户B不是房主，所以修改信息失败" time="0.013">
     </testcase>
-    <testcase classname=" 用户A创建公开房间room-1977，用户B在大厅查询房间列表，可以查询到room-1977房间。用户A将其改为私有房间后，用户B再次查询，无法查询到该房间" name=" 用户A创建公开房间room-1977，用户B在大厅查询房间列表，可以查询到room-1977房间。用户A将其改为私有房间后，用户B再次查询，无法查询到该房间" time="0.016">
+    <testcase classname=" 用户A创建公开房间room-1977，用户B在大厅查询房间列表，可以查询到room-1977房间。用户A将其改为私有房间后，用户B再次查询，无法查询到该房间" name=" 用户A创建公开房间room-1977，用户B在大厅查询房间列表，可以查询到room-1977房间。用户A将其改为私有房间后，用户B再次查询，无法查询到该房间" time="0.011">
     </testcase>
-    <testcase classname=" 用户A创建私有房间room-1977，用户B在大厅查询房间列表，无法查询到room-1977房间。用户A将其改为公共房间后，用户B再次查询，可以查询到该房间" name=" 用户A创建私有房间room-1977，用户B在大厅查询房间列表，无法查询到room-1977房间。用户A将其改为公共房间后，用户B再次查询，可以查询到该房间" time="0.015">
+    <testcase classname=" 用户A创建私有房间room-1977，用户B在大厅查询房间列表，无法查询到room-1977房间。用户A将其改为公共房间后，用户B再次查询，可以查询到该房间" name=" 用户A创建私有房间room-1977，用户B在大厅查询房间列表，无法查询到room-1977房间。用户A将其改为公共房间后，用户B再次查询，可以查询到该房间" time="0.012">
     </testcase>
-    <testcase classname=" 用户A创建公共房间room-1977，并禁止其他用户进入房间，用户B尝试进入该房间，无法进入" name=" 用户A创建公共房间room-1977，并禁止其他用户进入房间，用户B尝试进入该房间，无法进入" time="0.015">
+    <testcase classname=" 用户A创建公共房间room-1977，并禁止其他用户进入房间，用户B尝试进入该房间，无法进入" name=" 用户A创建公共房间room-1977，并禁止其他用户进入房间，用户B尝试进入该房间，无法进入" time="0.014">
     </testcase>
   </testsuite>
 </testsuites>

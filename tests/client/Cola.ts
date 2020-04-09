@@ -5,7 +5,7 @@ export default class ColaClient {
   private gameId: string;
   private client: pinus.WSClient;
   private debug: boolean;
-  private playerInfo: Cola.PlayerInfo;
+  private playerInitInfo: Cola.PlayerInitInfo;
   private gateHost: string;
   private gatePort: number;
   private connectorHost: string;
@@ -13,7 +13,7 @@ export default class ColaClient {
 
   constructor(params: Cola.Init, options?: Cola.ColaOptions){
     this.gameId = params.gameId;
-    this.playerInfo = params.playerInfo;
+    this.playerInitInfo = params.playerInitInfo;
     this.gateHost = params.gateHost;
     this.gatePort = params.gatePort;
     this.client = new pinus.WSClient();
@@ -61,7 +61,8 @@ export default class ColaClient {
         maxPlayers: params.maxPlayers,
         isPrivate: params.isPrivate,
         customProperties: params.customProperties,
-        teamList: params.teamList
+        teamList: params.teamList,
+        playerInfoExtra: params.playerInfoExtra
       };
       this.client.request("game.gameHandler.createRoom", requestData, (res: Cola.Response.CreateRoom) => {
         if (res.code === 200){
@@ -75,11 +76,11 @@ export default class ColaClient {
 
   /**
    * 进入房间
-   * @param {string} rid 房间id
+   * @param {Cola.Params.EnterRoom} params
    */
-  public enterRoom(rid: string): Promise<Cola.Room> {
+  public enterRoom(params: Cola.Params.EnterRoom): Promise<Cola.Room> {
     return new Promise((resolve, reject) => {
-      const requestData: Cola.Request.EnterRoomMsg = { rid };
+      const requestData: Cola.Request.EnterRoomMsg = params;
       this.client.request("game.gameHandler.enterRoom", requestData, (res: Cola.Response.EnterRoom) => {
         if (res.code === 200){
           resolve(res.data);
@@ -134,7 +135,7 @@ export default class ColaClient {
         log: this.debug,
       },
       () => {
-        const requestData: Cola.Request.GetConnectorEntry = this.playerInfo.uid;
+        const requestData: Cola.Request.GetConnectorEntry = this.playerInitInfo.uid;
         this.client.request("gate.gateHandler.getConnectorEntry", requestData, (res: Cola.Response.GateGetConnectorEntry) => {
           if (res.code === 200) {
             resolve(res.data);
@@ -156,7 +157,7 @@ export default class ColaClient {
         port: this.connectorPort,
         log: this.debug,
         }, () => {
-        const requestData: Cola.Request.ConnectorEnter = this.playerInfo;
+        const requestData: Cola.Request.ConnectorEnter = this.playerInitInfo;
         this.client.request("connector.entryHandler.enter", requestData, (res: Cola.Response.ConnectorEnter) => {
           if (res.code === 200){
             resolve();

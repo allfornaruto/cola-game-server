@@ -59,6 +59,7 @@ export class GameHandler {
    * @param {Object} session
    */
   async createRoom(msg: Cola.Request.CreateRoomMsg, session: BackendSession): Promise<Cola.Response.CreateRoom> {
+    const playerInfoExtra = msg.playerInfoExtra;
     // 随机一个roomId
     const rid = uuid();
     console.log(`[begin] game.gameHandler.createRoom uid = ${session.uid}`);
@@ -66,11 +67,19 @@ export class GameHandler {
     const uid = session.uid;
     const gameId = session.get('gameId');
     const name = session.get('name');
-    const teamId = session.get('teamId');
-    const customPlayerStatus = session.get('customPlayerStatus');
-    const customProfile = session.get('customProfile');
-    const matchAttributes = session.get('matchAttributes');
     const serverId = session.get('serverId');
+    const teamId = playerInfoExtra.teamId;
+    const customPlayerStatus = playerInfoExtra.customPlayerStatus;
+    const customProfile = playerInfoExtra.customProfile;
+    const matchAttributes = playerInfoExtra.matchAttributes;
+
+    session.set('teamId', teamId);
+    session.set('customPlayerStatus', customPlayerStatus);
+    session.set('customProfile', customProfile);
+    session.set('matchAttributes', matchAttributes);
+    const sessionPushPlayerInfoExtraResult: any = await session.apushAll();
+    if (sessionPushPlayerInfoExtraResult) console.error('game.gameHandler.createRoom sessionPushPlayerInfoExtraResult failed! error is : %j', sessionPushPlayerInfoExtraResult.stack);
+
     const playerInfo: Cola.PlayerInfo = {
       uid,
       gameId,
@@ -103,7 +112,7 @@ export class GameHandler {
     session.set('room', rid);
     session.set('ownRoom', rid);
     const sessionPushResult: any = await session.apushAll();
-    if (sessionPushResult) console.error('gameHandler createRoom session.apushAll for session service failed! error is : %j', sessionPushResult.stack);
+    if (sessionPushResult) console.error('gameHandler createRoom sessionPushResult failed! error is : %j', sessionPushResult.stack);
 
     // 向游戏大厅广播房间创建的消息
     const onRoomCreateMsg: Cola.EventRes.OnRoomCreate = room.getRoomInfo();
@@ -127,6 +136,14 @@ export class GameHandler {
   async enterRoom(msg: Cola.Request.EnterRoomMsg, session: BackendSession): Promise<Cola.Response.EnterRoom> {
 
     console.log(`[begin] game.gameHandler.enterRoom uid = ${session.uid} rid = ${msg.rid}`);
+
+    const playerInfoExtra = msg.playerInfoExtra;
+    session.set('teamId', playerInfoExtra.teamId);
+    session.set('customPlayerStatus', playerInfoExtra.customPlayerStatus);
+    session.set('customProfile', playerInfoExtra.customProfile);
+    session.set('matchAttributes', playerInfoExtra.matchAttributes);
+    const sessionPushPlayerInfoExtraResult: any = await session.apushAll();
+    if (sessionPushPlayerInfoExtraResult) console.error('game.gameHandler.createRoom sessionPushPlayerInfoExtraResult failed! error is : %j', sessionPushPlayerInfoExtraResult.stack);
 
     let { rid } = msg;
 

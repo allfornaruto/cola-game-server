@@ -36,8 +36,8 @@ export class Handler {
 
     }
 
-    async enter(playerInfo: Cola.PlayerInfo, session: FrontendSession): Promise<Cola.Response.ConnectorEnter> {
-        const { uid, gameId, name, teamId, customPlayerStatus, customProfile, matchAttributes } = playerInfo;
+    async enter(playerInfo: Cola.PlayerInitInfo, session: FrontendSession): Promise<Cola.Response.ConnectorEnter> {
+        const { uid, gameId, name } = playerInfo;
         const serverId = this.app.get('serverId');
         console.log(`[begin] connector.entryHandler.enter playerInfo=${JSON.stringify(playerInfo)}`);
         let sessionService = this.app.get('sessionService');
@@ -56,10 +56,10 @@ export class Handler {
         session.set('serverId', serverId);
         session.set('gameId', gameId);
         session.set('name', name);
-        session.set('teamId', teamId);
-        session.set('customPlayerStatus', customPlayerStatus);
-        session.set('customProfile', customProfile);
-        session.set('matchAttributes', matchAttributes);
+        // session.set('teamId', teamId);
+        // session.set('customPlayerStatus', customPlayerStatus);
+        // session.set('customProfile', customProfile);
+        // session.set('matchAttributes', matchAttributes);
         const sessionPushResult: any = await session.apushAll();
         if (sessionPushResult) console.error('connector.entryHandler.enter session.apushAll for session service failed! error is : %j', sessionPushResult.stack);
 

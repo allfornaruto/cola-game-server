@@ -5,25 +5,29 @@ import { Cola } from "../types/Cola";
 const gateHost = "127.0.0.1";
 const gatePort = 3100;
 
-const playerInfoA: Cola.PlayerInfo = {
+const playerInfoA: Cola.PlayerInitInfo = {
   uid: "111111",
   gameId: "dnf",
   name: "测试用户-A",
+};
+const playerInfoExtraA: Cola.PlayerInfoExtra = {
   teamId: "1",
   customPlayerStatus: 0,
   customProfile: JSON.stringify({ hp: 100, mp: 80 }),
   matchAttributes: []
 };
-const playerInfoB: Cola.PlayerInfo = {
+const playerInfoB: Cola.PlayerInitInfo = {
   uid: "222222",
   gameId: "dnf",
   name: "测试用户-B",
+};
+const playerInfoExtraB: Cola.PlayerInfoExtra = {
   teamId: "2",
   customPlayerStatus: 0,
   customProfile: JSON.stringify({ hp: 120, mp: 60 }),
   matchAttributes: []
 };
-const myRoom: Cola.Params.CreateRoom = {
+const myRoomA: Cola.Params.CreateRoom = {
   name: "room-1977",
   type: "0",
   createType: 0,
@@ -31,19 +35,20 @@ const myRoom: Cola.Params.CreateRoom = {
   isPrivate: false,
   customProperties: "",
   teamList: [],
+  playerInfoExtra: playerInfoExtraA
 };
 
 const init_A: Cola.Init = {
   gateHost,
   gatePort,
   gameId: "dnf",
-  playerInfo: playerInfoA
+  playerInitInfo: playerInfoA
 };
 const init_B: Cola.Init = {
   gateHost,
   gatePort,
   gameId: "dnf",
-  playerInfo: playerInfoB
+  playerInitInfo: playerInfoB
 };
 const options: Cola.ColaOptions = {
   debug: true
@@ -96,47 +101,39 @@ test("用户A创建房间room-1977，用户B在大厅监听该房间的创建", 
   colaB.listen("onRoomCreate", async (event: Cola.EventRes.OnRoomCreate) => {
     console.log('>>>>>>>>>>>>>>>colaB ColaEvent[onRoomCreate]', JSON.stringify(event));
     expect(event.gameId).toBe(playerInfoA.gameId);
-    expect(event.name).toBe(myRoom.name);
-    expect(event.type).toBe(myRoom.type);
-    expect(event.createType).toBe(myRoom.createType);
-    expect(event.maxPlayers).toBe(myRoom.maxPlayers);
+    expect(event.name).toBe(myRoomA.name);
+    expect(event.type).toBe(myRoomA.type);
+    expect(event.createType).toBe(myRoomA.createType);
+    expect(event.maxPlayers).toBe(myRoomA.maxPlayers);
     expect(event.owner).toBe(playerInfoA.uid);
-    expect(event.isPrivate).toBe(myRoom.isPrivate);
-    expect(event.customProperties).toBe(myRoom.customProperties);
-    expect(event.teamList).toStrictEqual(myRoom.teamList);
-    expect(event.maxPlayers).toBe(myRoom.maxPlayers);
+    expect(event.isPrivate).toBe(myRoomA.isPrivate);
+    expect(event.customProperties).toBe(myRoomA.customProperties);
+    expect(event.teamList).toStrictEqual(myRoomA.teamList);
+    expect(event.maxPlayers).toBe(myRoomA.maxPlayers);
     expect(event.playerList[0].uid).toBe(playerInfoA.uid);
     expect(event.playerList[0].gameId).toBe(playerInfoA.gameId);
     expect(event.playerList[0].name).toBe(playerInfoA.name);
-    expect(event.playerList[0].teamId).toBe(playerInfoA.teamId);
-    expect(event.playerList[0].customPlayerStatus).toBe(playerInfoA.customPlayerStatus);
-    expect(event.playerList[0].customProfile).toBe(playerInfoA.customProfile);
-    expect(event.playerList[0].matchAttributes).toStrictEqual(playerInfoA.matchAttributes);
     setTimeout(() => done(), 5000);
   });
 
   // 用户A、B进入游戏大厅，用户A创建房间
   await colaA.enterHall();
   await colaB.enterHall();
-  const roomInfo: Cola.Room = await colaA.createRoom(myRoom);
+  const roomInfo: Cola.Room = await colaA.createRoom(myRoomA);
   console.log(`roomInfo = ${JSON.stringify(roomInfo)}`);
   expect(roomInfo.gameId).toBe(playerInfoA.gameId);
-  expect(roomInfo.name).toBe(myRoom.name);
-  expect(roomInfo.type).toBe(myRoom.type);
-  expect(roomInfo.createType).toBe(myRoom.createType);
-  expect(roomInfo.maxPlayers).toBe(myRoom.maxPlayers);
+  expect(roomInfo.name).toBe(myRoomA.name);
+  expect(roomInfo.type).toBe(myRoomA.type);
+  expect(roomInfo.createType).toBe(myRoomA.createType);
+  expect(roomInfo.maxPlayers).toBe(myRoomA.maxPlayers);
   expect(roomInfo.owner).toBe(playerInfoA.uid);
-  expect(roomInfo.isPrivate).toBe(myRoom.isPrivate);
-  expect(roomInfo.customProperties).toBe(myRoom.customProperties);
-  expect(roomInfo.teamList).toStrictEqual(myRoom.teamList);
-  expect(roomInfo.maxPlayers).toBe(myRoom.maxPlayers);
+  expect(roomInfo.isPrivate).toBe(myRoomA.isPrivate);
+  expect(roomInfo.customProperties).toBe(myRoomA.customProperties);
+  expect(roomInfo.teamList).toStrictEqual(myRoomA.teamList);
+  expect(roomInfo.maxPlayers).toBe(myRoomA.maxPlayers);
   expect(roomInfo.playerList[0].uid).toBe(playerInfoA.uid);
   expect(roomInfo.playerList[0].gameId).toBe(playerInfoA.gameId);
   expect(roomInfo.playerList[0].name).toBe(playerInfoA.name);
-  expect(roomInfo.playerList[0].teamId).toBe(playerInfoA.teamId);
-  expect(roomInfo.playerList[0].customPlayerStatus).toBe(playerInfoA.customPlayerStatus);
-  expect(roomInfo.playerList[0].customProfile).toBe(playerInfoA.customProfile);
-  expect(roomInfo.playerList[0].matchAttributes).toStrictEqual(playerInfoA.matchAttributes);
 });
 
 test("用户A创建房间room-1977，用户B进入该房间，用户A监听用户B进入/离开房间的事件", async (done) => {
@@ -147,10 +144,10 @@ test("用户A创建房间room-1977，用户B进入该房间，用户A监听用�
     expect(event.uid).toBe(playerInfoB.uid);
     expect(event.gameId).toBe(playerInfoB.gameId);
     expect(event.name).toBe(playerInfoB.name);
-    expect(event.teamId).toBe(playerInfoB.teamId);
-    expect(event.customPlayerStatus).toBe(playerInfoB.customPlayerStatus);
-    expect(event.customProfile).toBe(playerInfoB.customProfile);
-    expect(event.matchAttributes).toStrictEqual(playerInfoB.matchAttributes);
+    expect(event.teamId).toBe(playerInfoExtraB.teamId);
+    expect(event.customPlayerStatus).toBe(playerInfoExtraB.customPlayerStatus);
+    expect(event.customProfile).toBe(playerInfoExtraB.customProfile);
+    expect(event.matchAttributes).toStrictEqual(playerInfoExtraB.matchAttributes);
   });
   // 用户A监听用户B离开房间事件
   colaA.listen("onKick", (event: Cola.EventRes.OnKick) => {
@@ -163,7 +160,7 @@ test("用户A创建房间room-1977，用户B进入该房间，用户A监听用�
   colaB.listen("onRoomCreate", async (event: Cola.EventRes.OnRoomCreate) => {
     console.log('>>>>>>>>>>>>>>>colaB ColaEvent[onRoomCreate]', JSON.stringify(event));
     rid = event.rid;
-    const roomInfo: Cola.Room = await colaB.enterRoom(rid);
+    const roomInfo: Cola.Room = await colaB.enterRoom({ rid, playerInfoExtra: playerInfoExtraB });
     console.log(`roomInfo = ${JSON.stringify(roomInfo)}`);
     expect(roomInfo.playerList.length).toBe(2);
     expect(roomInfo.playerList[0]).toMatchObject(playerInfoA);
@@ -174,7 +171,7 @@ test("用户A创建房间room-1977，用户B进入该房间，用户A监听用�
   // 用户A、B进入游戏大厅，用户A创建房间
   await colaA.enterHall();
   await colaB.enterHall();
-  await colaA.createRoom(myRoom);
+  await colaA.createRoom(myRoomA);
 });
 
 test("用户A创建房间room-1977，用户B进入该房间，用户A发送消息，用户B监听消息", async (done) => {
@@ -185,10 +182,10 @@ test("用户A创建房间room-1977，用户B进入该房间，用户A发送消�
     expect(event.uid).toBe(playerInfoB.uid);
     expect(event.gameId).toBe(playerInfoB.gameId);
     expect(event.name).toBe(playerInfoB.name);
-    expect(event.teamId).toStrictEqual(playerInfoB.teamId);
-    expect(event.customPlayerStatus).toBe(playerInfoB.customPlayerStatus);
-    expect(event.customProfile).toBe(playerInfoB.customProfile);
-    expect(event.matchAttributes).toStrictEqual(playerInfoB.matchAttributes);
+    expect(event.teamId).toStrictEqual(playerInfoExtraB.teamId);
+    expect(event.customPlayerStatus).toBe(playerInfoExtraB.customPlayerStatus);
+    expect(event.customProfile).toBe(playerInfoExtraB.customProfile);
+    expect(event.matchAttributes).toStrictEqual(playerInfoExtraB.matchAttributes);
     // 用户A发送消息
     const sendResult: Cola.Status = await colaA.sendMsg(["222222"], "Hello colaB");
     expect(sendResult.status).toBeTruthy();
@@ -197,7 +194,7 @@ test("用户A创建房间room-1977，用户B进入该房间，用户A发送消�
   colaB.listen("onRoomCreate", async (event: Cola.EventRes.OnRoomCreate) => {
     console.log('>>>>>>>>>>>>>>>colaB ColaEvent[onRoomCreate]', JSON.stringify(event));
     rid = event.rid;
-    const roomInfo = await colaB.enterRoom(rid);
+    const roomInfo = await colaB.enterRoom({ rid, playerInfoExtra: playerInfoExtraB });
     console.log(`roomInfo = ${JSON.stringify(roomInfo)}`);
     expect(roomInfo.playerList.length).toBe(2);
     expect(roomInfo.playerList[0]).toMatchObject(playerInfoA);
@@ -215,7 +212,7 @@ test("用户A创建房间room-1977，用户B进入该房间，用户A发送消�
   // 用户A、B进入游戏大厅，用户A创建房间
   await colaA.enterHall();
   await colaB.enterHall();
-  await colaA.createRoom(myRoom);
+  await colaA.createRoom(myRoomA);
 });
 
 test("用户A创建房间room-1977，用户B进入该房间，房主（用户A）修改房间信息，用户B监听房间修改消息，用户B尝试修改房间信息，由于用户B不是房主，所以修改信息失败", async () => {

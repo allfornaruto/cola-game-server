@@ -16,16 +16,10 @@ npm run test
 
 * init  `{Cola.Init}`  初始化必传参数
 	* gameId `{string}` 游戏ID
-	* playerInfo `{Cola.PlayerInfo}` 玩家信息
+	* playerInitInfo `{Cola.playerInitInfo}`  玩家初始化信息
 		* uid `{string}` 用户uid
 		* gameId `{string}` 游戏ID
 		* name `{string}` 游戏用户昵称
-		* teamId `{string}` 房间内队伍ID
-		* customPlayerStatus `{number}` 自定义玩家状态
-		* customProfile `{string}` 自定义玩家信息
-		* matchAttributes `{Cola.MatchAttribute}` 匹配属性列表
-			* name `{string}` 属性名称
-			* value `{number}` 属性值
 	* gateHost `{string}` 游戏服务器地址
 	* gatePort `{number}` 游戏服务器端口
 * options  `{Cola.ColaOptions}` 初始化可选参数
@@ -38,17 +32,13 @@ import { Cola } from "./types/Cola";
 const playerInfo: Cola.PlayerInfo = {
   uid: "111111",
   gameId: "dnf",
-  name: "测试用户-A",
-  teamId: "1",
-  customPlayerStatus: 0,
-  customProfile: JSON.stringify({ hp: 100, mp: 80 }),
-  matchAttributes: []
+  name: "测试用户-A"
 };
 const init: Cola.Init = {
   gateHost: "127.0.0.1",
   gatePort: 3100,
   gameId: "dnf",
-  playerInfo: playerInfo
+  playerInitInfo: playerInfo
 };
 const options: Cola.ColaOptions = {
   debug: true
@@ -93,6 +83,12 @@ await cola.enterHall();
 ### 玩家创建房间
 
 ```typescript
+const playerInfoExtra: Cola.PlayerInfoExtra = {
+  teamId: "1",
+  customPlayerStatus: 0,
+  customProfile: JSON.stringify({ hp: 100, mp: 80 }),
+  matchAttributes: []
+};
 const myRoom: Cola.Params.CreateRoom = {
   name: "room-1977",
   type: "0",
@@ -100,19 +96,28 @@ const myRoom: Cola.Params.CreateRoom = {
   maxPlayers: 2,
   isPrivate: false,
   customProperties: "",
-  teamList: [],
+	teamList: [],
+	playerInfoExtra: playerInfoExtra
 };
 const roomInfo: Cola.Room = await cola.createRoom(myRoom);
 ```
 
 ### 进入房间
 
-> enterRoom(rid: string): Promise<Cola.Room>
+> enterRoom(params: Cola.Params.EnterRoom): Promise<Cola.Room>
 
-* rid `{string}` 房间ID
+* params `{Cola.Params.EnterRoom}` 进入房间请求参数
+	* rid `{string}` 房间ID
+	* playerInfoExtra `{Cola.playerInfoExtra}` 加入房间用户额外信息参数
+		* teamId `{string}` 房间内队伍id
+		* customPlayerStatus `{number}` 自定义玩家状态
+		* customProfile `{string}` 自定义玩家信息
+		* matchAttributes `{MatchAttribute[]}` 匹配属性列表
+			* name `{string}` 属性名称
+			* value `{number}` 属性值
 
 ```typescript
-const roomInfo: Cola.Room = await cola.enterRoom(rid);
+const roomInfo: Cola.Room = await cola.enterRoom({ rid, playerInfoExtra: playerInfoExtra });
 ```
 
 ### 在房间内发送消息给指定用户
@@ -136,8 +141,8 @@ const sendResult: Cola.Status = await cola.sendMsg(["222222"], "Hello cola");
 interface Init {
 	// 游戏ID
 	gameId: string;
-	// 玩家信息
-	playerInfo: PlayerInfo;
+	// 玩家初始化信息
+	PlayerInitInfo: PlayerInitInfo;
 	// 游戏服务器地址
 	gateHost: string;
 	// 游戏服务器端口
@@ -158,7 +163,7 @@ type Event = "io-error" | "close" | "onKick" | "heartbeat timeout" | "onRoomCrea
 > 玩家加入大厅事件
 
 ```typescript
-interface OnHallAdd extends PlayerInfo {
+interface OnHallAdd extends PlayerInitInfo {
 
 }
 ```
@@ -231,6 +236,21 @@ interface CreateRoom {
 	customProperties: string;
 	// 团队属性
 	teamList: TeamInfo[];
+	// 加入房间用户额外信息参数
+	playerInfoExtra: PlayerInfoExtra;
+}
+```
+
+### Params.EnterRoom
+
+> 进入房间请求参数
+
+```typescript
+export interface EnterRoom {
+	// 房间ID
+	rid: string;
+	// 加入房间用户额外信息参数
+	playerInfoExtra: PlayerInfoExtra;
 }
 ```
 
@@ -261,6 +281,38 @@ interface TeamInfo {
 	minPlayers: number;
 	// 队伍最大人数
 	maxPlayers: number;
+}
+```
+
+### PlayerInfoExtra
+
+> 加入房间用户额外信息参数
+
+```typescript
+interface PlayerInfoExtra {
+	// 房间内队伍id
+	teamId: string;
+	// 自定义玩家状态
+	customPlayerStatus: number;
+	// 自定义玩家信息
+	customProfile: string;
+	// 匹配属性列表
+	matchAttributes: MatchAttribute[];
+}
+```
+
+### PlayerInitInfo
+
+> 玩家初始化信息
+
+```typescript
+interface PlayerInitInfo {
+	// 用户uid
+	uid: string;
+	// 游戏id
+	gameId: string;
+	// 游戏用户昵称
+	name: string;
 }
 ```
 

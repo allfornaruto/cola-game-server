@@ -1,7 +1,7 @@
 export namespace Cola {
   export namespace Request {
     export type GetConnectorEntry = string;
-    export interface ConnectorEnter extends PlayerInfo {
+    export interface ConnectorEnter extends PlayerInitInfo {
 
     }
     /**
@@ -14,6 +14,7 @@ export namespace Cola {
      * @field {boolean} isPrivate  是否私有
      * @field {string} customProperties  房间自定义属性
      * @field {TeamInfo[]} teamList  团队属性
+     * @field {PlayerInfoExtra} playerInfoExtra 加入房间用户额外信息参数
      */
     export interface CreateRoomMsg {
       gameId: string;
@@ -24,13 +25,16 @@ export namespace Cola {
       isPrivate: boolean;
       customProperties: string;
       teamList: TeamInfo[];
+      playerInfoExtra: PlayerInfoExtra;
     }
     /**
      * @name 进入房间请求参数
      * @field {string} rid 房间ID
+     * @field {PlayerInfoExtra} playerInfoExtra 加入房间用户额外信息参数
      */
     export interface EnterRoomMsg {
       rid: string;
+      playerInfoExtra: PlayerInfoExtra;
     }
     /**
      * @name 房间变更参数
@@ -100,13 +104,10 @@ export namespace Cola {
     export interface OnRoomCreate extends Room {
 
     }
-    export interface OnHallAdd extends PlayerInfo {
+    export interface OnHallAdd extends PlayerInitInfo {
 
     }
     export interface OnRoomAdd extends PlayerInfo {
-
-    }
-    export interface OnHallAdd extends PlayerInfo {
 
     }
 
@@ -143,6 +144,7 @@ export namespace Cola {
      * @field {boolean} isPrivate  是否私有
      * @field {string} customProperties  房间自定义属性
      * @field {TeamInfo[]} teamList  团队属性
+     * @field {PlayerInfoExtra} playerInfoExtra 加入房间用户额外信息参数
      */
     export interface CreateRoom {
       name: string;
@@ -152,6 +154,16 @@ export namespace Cola {
       isPrivate: boolean;
       customProperties: string;
       teamList: TeamInfo[];
+      playerInfoExtra: PlayerInfoExtra;
+    }
+    /**
+     * @name 进入房间请求参数
+     * @field {string} rid 房间ID
+     * @field {PlayerInfoExtra} playerInfoExtra 加入房间用户额外信息参数
+     */
+    export interface EnterRoom {
+	    rid: string;
+	    playerInfoExtra: PlayerInfoExtra;
     }
   }
 
@@ -160,13 +172,13 @@ export namespace Cola {
   /**
    * @name Cola客户端初始化参数
    * @field {string} gameId 游戏ID
-   * @fidld {PlayerInfo} playerInfo 玩家信息
+   * @fidld {PlayerInitInfo} playerInitInfo 玩家初始化信息
    * @field {string} gateHost 游戏服务器地址
    * @fidld {number} gatePort 游戏服务器端口
    */
   export interface Init {
     gameId: string;
-    playerInfo: PlayerInfo;
+    playerInitInfo: PlayerInitInfo;
     gateHost: string;
     gatePort: number;
   }
@@ -176,6 +188,17 @@ export namespace Cola {
    */
   export interface ColaOptions {
     debug: boolean;
+  }
+  /**
+   * @name 玩家初始化信息参数
+   * @field {string} uid 用户uid
+   * @field {string} gameId 游戏id
+   * @field {string} name 游戏用户昵称
+   */
+  export interface PlayerInitInfo {
+    uid: string;
+    gameId: string;
+    name: string;
   }
   /**
    * @name 玩家信息参数
@@ -222,6 +245,19 @@ export namespace Cola {
   export interface Connector {
     host: string;
     port: number;
+  }
+  /**
+   * @name 加入房间用户额外信息参数
+   * @field {string} teamId 房间内队伍id
+   * @field {number} customPlayerStatus 自定义玩家状态
+   * @field {string} customProfile 自定义玩家信息
+   * @field {MatchAttribute[]} matchAttributes 匹配属性列表
+   */
+  export interface PlayerInfoExtra {
+    teamId: string;
+    customPlayerStatus: number;
+    customProfile: string;
+    matchAttributes: MatchAttribute[];
   }
   /**
    * @name 房间信息
