@@ -12,6 +12,25 @@ npm run test
 
 ### 初始化并与服务器建立WebSocket连接
 
+> new ColaClient(init, options)
+
+* init  `{Cola.Init}`  初始化必传参数
+	* gameId `{string}` 游戏ID
+	* playerInfo `{Cola.PlayerInfo}` 玩家信息
+		* uid `{string}` 用户uid
+		* gameId `{string}` 游戏ID
+		* name `{string}` 游戏用户昵称
+		* teamId `{string}` 房间内队伍ID
+		* customPlayerStatus `{number}` 自定义玩家状态
+		* customProfile `{string}` 自定义玩家信息
+		* matchAttributes `{Cola.MatchAttribute}` 匹配属性列表
+			* name `{string}` 属性名称
+			* value `{number}` 属性值
+	* gateHost `{string}` 游戏服务器地址
+	* gatePort `{number}` 游戏服务器端口
+* options  `{Cola.ColaOptions}` 初始化可选参数
+	* debug `{boolean}` 是否开启日志调试，默认false
+
 ```typescript
 import ColaClient from "./tests/client/Cola";
 import { Cola } from "./types/Cola";
@@ -88,24 +107,22 @@ const roomInfo: Cola.Room = await cola.createRoom(myRoom);
 
 ### 进入房间
 
+> enterRoom(rid: string): Promise<Cola.Room>
+
+* rid `{string}` 房间ID
+
 ```typescript
-/**
- * 进入房间
- * @param {string} rid 房间id
- */
-// enterRoom(rid: string): Promise<Cola.Room>
 const roomInfo: Cola.Room = await cola.enterRoom(rid);
 ```
 
 ### 在房间内发送消息给指定用户
 
+> sendMsg(uidList: string[], content: string): Promise<Cola.Status>
+
+* uidList `{string[]}` 用户uid数组
+* content `{string}` 发送内容
+
 ```typescript
-/**
- * 在房间内发送消息给指定用户
- * @param {string[]} uidList 用户uid数组
- * @param {string} content 发送内容
- */
-// sendMsg(uidList: string[], content: string): Promise<Cola.Status>
 const sendResult: Cola.Status = await cola.sendMsg(["222222"], "Hello cola");
 ```
 
