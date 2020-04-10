@@ -295,6 +295,25 @@ export interface EnterRoom {
 }
 ```
 
+### Params.ChangeRoom
+
+> 房主修改房间信息
+
+```typescript
+interface ChangeRoom {
+	// 房间名称（可选）
+	name?: string;
+	// 房主ID（可选）
+	owner?: string;
+	// 是否私有（可选）
+	isPrivate?: boolean;
+	// 自定义房间属性（可选）
+	customProperties?: string;
+	// 是否禁止加入房间（可选）
+	isForbidJoin?: boolean;
+}
+```
+
 ### CreateRoomType
 
 > 创建房间方式
