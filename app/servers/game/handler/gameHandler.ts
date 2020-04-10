@@ -4,6 +4,7 @@ import { v4 as uuid } from "uuid";
 import { CreatePlayerParams, Player } from "../../../domain/model/Player";
 import { AddRoomParams, Room } from "../../../domain/model/Room";
 import Updater from "../../../domain/Updater";
+import { changeOtherPlayerSession } from "../../../util/func";
 
 export default function (app: Application) {
   return new GameHandler(app);
@@ -89,7 +90,7 @@ export class GameHandler {
       customProfile,
       matchAttributes,
     };
-    const createPlayerParams: CreatePlayerParams = Object.assign({ isRobot: false }, playerInfo);
+    const createPlayerParams: CreatePlayerParams = Object.assign({ isRobot: false, frontendId: serverId }, playerInfo);
     const player = new Player(createPlayerParams);
 
     // 创建channel、并加用户
@@ -177,7 +178,7 @@ export class GameHandler {
       customProfile,
       matchAttributes,
     };
-    const createPlayerParams: CreatePlayerParams = Object.assign({ isRobot: false }, playerInfo);
+    const createPlayerParams: CreatePlayerParams = Object.assign({ isRobot: false, frontendId: serverId }, playerInfo);
     const player = new Player(createPlayerParams);
 
     // 找到channel、并加用户
@@ -213,11 +214,6 @@ export class GameHandler {
    * @param {Object} session
    */
   async changeRoom(msg: Cola.Request.ChangeRoomMsg, session: BackendSession): Promise<Cola.Response.ChangeRoom> {
-    const name = msg?.name;
-    const owner = msg?.owner;
-    const isPrivate = msg?.isPrivate;
-    const customProperties = msg?.customProperties;
-    const isForbidJoin = msg?.isForbidJoin;
     const ownRoom = session.get("ownRoom");
     if (!ownRoom) {
       return {
@@ -227,6 +223,46 @@ export class GameHandler {
       }
     }
 
+    // 从Updater中找到目标room
+    const room = Updater.findRoom(ownRoom);
+
+    // 如果涉及到房主变更，需要修改新/旧房主的session ownRoom字段
+    const owner = msg?.owner;
+    if (!!owner) {
+      const backendSession = this.app.get("backendSessionService");
+      const newOwner = room.findPlayer(owner);
+      // 确认新房主在房间中
+      if (!!newOwner) {
+        // 删除旧房主的ownRoom
+        session.set("ownRoom", null);
+        // 更新新房主的ownRoom
+        try {
+          await changeOtherPlayerSession(backendSession, newOwner.frontendId, newOwner.uid, (session, resolve) => {
+            session.set("ownRoom", ownRoom);
+            resolve();
+          });
+        } catch (e) {
+          console.error(`gameHandler changeRoom changeOtherPlayerSession fail frontendId = ${newOwner.frontendId} uid = ${newOwner.uid}`, e);
+          // 还原旧房主
+          session.set("ownRoom", ownRoom);
+        }
+      }
+    }
+
+    // 修改房间信息
+    const newRoomInfo = room.changeRoomInfo(msg);
+
+    // 向该房间内所有成员广播房间信息变化事件
+    const channelService = this.app.get('channelService');
+    const channel = channelService.getChannel(ownRoom);
+    const param: Cola.EventRes.OnChangeRoom = newRoomInfo;
+    channel.pushMessage('onChangeRoom', param);
+
+    return {
+      code: 200,
+      message: "",
+      data: newRoomInfo
+    }
   }
 
   /**

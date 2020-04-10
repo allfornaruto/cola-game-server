@@ -38,7 +38,7 @@ export namespace Cola {
     }
     /**
      * @name 房间变更参数
-     * @field {string} roomName  房间名称（可选）
+     * @field {string} name  房间名称（可选）
      * @field {string} owner  房主ID（可选）
      * @field {boolean} isPrivate  是否私有（可选）
      * @field {string} customProperties  自定义房间属性（可选）
@@ -110,6 +110,9 @@ export namespace Cola {
     export interface OnRoomAdd extends PlayerInfo {
 
     }
+    export interface OnChangeRoom extends Room {
+
+    }
 
     /**
      * @name 用户离开房间事件
@@ -165,9 +168,24 @@ export namespace Cola {
 	    rid: string;
 	    playerInfoExtra: PlayerInfoExtra;
     }
+    /**
+     * @name 房主修改房间信息
+     * @field {string} name  房间名称（可选）
+     * @field {string} owner  房主ID（可选）
+     * @field {boolean} isPrivate  是否私有（可选）
+     * @field {string} customProperties  自定义房间属性（可选）
+     * @field {boolean} isForbidJoin  是否禁止加入房间（可选）
+     */
+    export interface ChangeRoom {
+      name?: string;
+      owner?: string;
+      isPrivate?: boolean;
+      customProperties?: string;
+      isForbidJoin?: boolean;
+    }
   }
 
-  export type Event = "io-error" | "close" | "onKick" | "heartbeat timeout" | "onRoomCreate" | "onHallAdd" | "onRoomAdd" | "onChat";
+  export type Event = "io-error" | "close" | "onKick" | "heartbeat timeout" | "onRoomCreate" | "onHallAdd" | "onRoomAdd" | "onChangeRoom" | "onChat";
 
   /**
    * @name Cola客户端初始化参数

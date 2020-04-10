@@ -10,9 +10,11 @@ import { Cola } from "../../../types/Cola";
  * @field {string} customProfile 自定义玩家信息
  * @field {MatchAttribute[]} matchAttributes 匹配属性列表
  * @field {boolean} isRobot 是否是机器人
+ * @field {string} frontendId 前端服务器id
  */
 export interface CreatePlayerParams extends Cola.PlayerInfo {
   isRobot: boolean;
+  frontendId: string;
 }
 /**
  * @name 玩家信息
@@ -24,6 +26,7 @@ export interface CreatePlayerParams extends Cola.PlayerInfo {
  * @field {string} customProfile  自定义玩家信息
  * @field {Cola.MatchAttribute[]} matchAttributes  玩家匹配属性列表
  * @field {boolean} isRobot  玩家是否为机器人
+ * @field {string} frontendId  前端服务器id
  * @field {Cola.NetworkState} commonNetworkState  玩家在房间的网络状态
  * @field {Cola.NetworkState} relayNetworkState  玩家在游戏中的网络状态
  */
@@ -36,6 +39,7 @@ export class Player {
   customProfile: string;
   matchAttributes: Cola.MatchAttribute[];
   isRobot: boolean;
+  frontendId: string;
   commonNetworkState: Cola.NetworkState;
   relayNetworkState: Cola.NetworkState;
 
@@ -48,6 +52,7 @@ export class Player {
     this.customProfile = params.customProfile;
     this.matchAttributes = params.matchAttributes;
     this.isRobot = params.isRobot;
+    this.frontendId = params.frontendId;
     this.commonNetworkState = 1;
     this.relayNetworkState = 3;
   }

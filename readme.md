@@ -72,6 +72,8 @@ cola.listen("onRoomAdd", async (event: Cola.EventRes.OnRoomAdd) => console.log(e
 cola.listen("onKick", (event: Cola.EventRes.OnKick) => console.log(event));
 // 监听玩家发送消息
 cola.listen("onChat", async (event: Cola.EventRes.OnChat) => console.log(event));
+// 监听房间信息变化
+cola.listen("onChangeRoom", async (event: Cola.EventRes.OnChangeRoom) => console.log(event));
 ```
 
 ### 玩家进入游戏大厅
@@ -81,6 +83,30 @@ await cola.enterHall();
 ```
 
 ### 玩家创建房间
+
+> createRoom(params: Cola.Params.CreateRoom): Promise<Cola.Room> {
+
+* params `{Cola.Params.CreateRoom}` 创建房间参数
+	* name `{string}` 房间名称
+	* type `{string}` 房间类型
+	* createType `{Cola.CreateRoomType}` 创建房间方式
+		* 0 `{number}` 普通创建
+		* 1  `{number}` 匹配创建
+	* maxPlayers `{number}` 房间最大玩家数量
+	* isPrivate `{boolean}` 是否私有
+	* customProperties `{string}` 房间自定义属性
+	* teamList `{TeamInfo[]}` 团队属性
+		* id: `{string}` 队伍ID
+    * name: `{string}` 队伍名称
+    * minPlayers: `{number}` 队伍最小人数
+    * maxPlayers: `{number}` 队伍最大人数
+	* playerInfoExtra `{PlayerInfoExtra}` 加入房间用户额外信息参数
+		* teamId `{string}` 房间内队伍id
+		* customPlayerStatus `{number}` 自定义玩家状态
+		* customProfile `{string}` 自定义玩家信息
+		* matchAttributes `{MatchAttribute[]}` 匹配属性列表
+			* name `{string}` 属性名称
+			* value `{number}` 属性值
 
 ```typescript
 const playerInfoExtra: Cola.PlayerInfoExtra = {
@@ -118,6 +144,21 @@ const roomInfo: Cola.Room = await cola.createRoom(myRoom);
 
 ```typescript
 const roomInfo: Cola.Room = await cola.enterRoom({ rid, playerInfoExtra: playerInfoExtra });
+```
+
+### 房主修改房间信息
+
+> changeRoom(params: Cola.Params.ChangeRoom): Promise<Cola.Room>
+
+* params `{Cola.Params.ChangeRoom}` 修改房间信息参数
+	* name `{string}` 房间名称（可选）
+	* owner `{string}` 房主ID（可选）
+	* isPrivate `{boolean}` 是否私有（可选）
+	* customProperties `{string}` 自定义房间属性（可选）
+	* isForbidJoin `{boolean}` 是否禁止加入房间（可选）
+
+```typescript
+const newRoomInfo: Cola.Room = await cola.changeRoom({ name: "新de房间名", owner: "新房主id" })
 ```
 
 ### 在房间内发送消息给指定用户

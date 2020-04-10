@@ -24,8 +24,8 @@ export default class ColaClient {
 
   /**
    * Cola事件监听处理
-   * @param event
-   * @param cb
+   * @param event 事件名称
+   * @param cb 监听回调
    */
   public listen(event: Cola.Event, cb: (e: any) => void) {
     this.client.on(event, data => {
@@ -49,7 +49,7 @@ export default class ColaClient {
 
   /**
    * 创建房间
-   * @param {Cola.Params.CreateRoom} params
+   * @param {Cola.Params.CreateRoom} params 创建房间参数
    */
   public createRoom(params: Cola.Params.CreateRoom): Promise<Cola.Room> {
     return new Promise((resolve, reject) => {
@@ -76,7 +76,7 @@ export default class ColaClient {
 
   /**
    * 进入房间
-   * @param {Cola.Params.EnterRoom} params
+   * @param {Cola.Params.EnterRoom} params 进入房间参数
    */
   public enterRoom(params: Cola.Params.EnterRoom): Promise<Cola.Room> {
     return new Promise((resolve, reject) => {
@@ -93,11 +93,28 @@ export default class ColaClient {
 
   /**
    * 离开房间
-   * @param roomName
+   * @param {string} rid 房间id
    */
   public leaveRoom(rid: string) {
     const requestData: Cola.Request.LeaveRoomMsg = { rid };
     this.client.notify("game.gameHandler.leaveRoom", requestData);
+  }
+
+  /**
+   * 房主修改房间信息
+   * @param {Cola.Params.ChangeRoom} params 修改房间信息参数
+   */
+  public changeRoom(params: Cola.Params.ChangeRoom): Promise<Cola.Room> {
+    return new Promise((resolve, reject) => {
+      const requestData: Cola.Request.ChangeRoomMsg = params;
+      this.client.request("game.gameHandler.changeRoom", requestData, (res: Cola.Response.ChangeRoom) => {
+        if (res.code === 200){
+          resolve(res.data);
+        } else {
+          reject(res);
+        }
+      });
+    })
   }
 
   /**

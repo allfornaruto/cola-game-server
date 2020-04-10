@@ -27,6 +27,18 @@ export interface AddRoomParams extends Cola.Request.CreateRoomMsg {
   channel: Channel
 };
 
+ /**
+  * @name 房间变更参数
+  * @field {string} name  房间名称（可选）
+  * @field {string} owner  房主ID（可选）
+  * @field {boolean} isPrivate  是否私有（可选）
+  * @field {string} customProperties  自定义房间属性（可选）
+  * @field {boolean} isForbidJoin  是否禁止加入房间（可选）
+  */
+export interface ChangeRoomInfoParams extends Cola.Request.ChangeRoomMsg {
+
+}
+
 /**
  * @name 房间
  * @field {string} id  房间ID
@@ -93,6 +105,18 @@ export class Room {
      * 获取符合Cola.Room数据结构的对象
      */
     public getRoomInfo(): Cola.Room {
+
+      const playerFormat = function (player: Player): Cola.PlayerInfo {
+        return {
+          uid: player.uid,
+          gameId: player.gameId,
+          name: player.name,
+          teamId: player.teamId,
+          customPlayerStatus: player.customPlayerStatus,
+          customProfile: player.customProfile,
+          matchAttributes: player.matchAttributes
+        }
+      }
       return {
         rid: this.rid,
         gameId: this.gameId,
@@ -103,7 +127,7 @@ export class Room {
         owner: this.owner,
         isPrivate: this.isPrivate,
         customProperties: this.customProperties,
-        playerList: this.playerList,
+        playerList: this.playerList.map(playerFormat),
         teamList: this.teamList,
         frameSyncState: this.frameSyncState,
         frameRate: this.frameRate,
@@ -114,10 +138,31 @@ export class Room {
     }
 
     /**
+     * 根据玩家uid返回玩家信息
+     * @param uid
+     */
+    public findPlayer(uid: string): Player | undefined {
+      return this.playerList.filter(player => player.uid === uid)[0];
+    }
+
+    /**
      * 向房间内添加一位玩家
      * @param {Player} player Player实例
      */
     public addPlayer(player: Player) {
       this.playerList.push(player);
+    }
+
+    /**
+     * 修改房间信息
+     * @param {ChangeRoomInfoParams} params 修改房间信息参数
+     */
+    public changeRoomInfo(params: ChangeRoomInfoParams): Cola.Room {
+      if (params.name) this.name = params.name;
+      if (params.owner) this.owner = params.owner;
+      if (params.isPrivate) this.isPrivate = params.isPrivate;
+      if (params.customProperties) this.customProperties = params.customProperties;
+      if (params.isForbidJoin) this.isForbidJoin = params.isForbidJoin;
+      return this.getRoomInfo();
     }
 }
