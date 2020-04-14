@@ -51,6 +51,14 @@ export namespace Cola {
       customProperties?: string;
       isForbidJoin?: boolean;
     }
+
+    /**
+     *
+     */
+    export interface ChangeCustomPlayerStatus {
+
+    }
+
     /**
      * @name 离开房间请求参数
      * @field {string} rid 房间ID

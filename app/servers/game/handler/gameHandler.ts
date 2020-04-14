@@ -266,6 +266,15 @@ export class GameHandler {
   }
 
   /**
+   * 玩家修改自定义状态
+   * @param {Cola.Request.ChangeCustomPlayerStatus} msg 修改自定义状态参数
+   * @param {BackendSession} session
+   */
+  async changeCustomPlayerStatus(msg: Cola.Request.ChangeCustomPlayerStatus, session: BackendSession): Promise<Cola.Response.ChangeCustomPlayerStatus> {
+
+  }
+
+  /**
    * 用户主动离开游戏房间(非大厅)
    * @param msg
    * @param session
