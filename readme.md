@@ -74,6 +74,8 @@ cola.listen("onKick", (event: Cola.EventRes.OnKick) => console.log(event));
 cola.listen("onChat", async (event: Cola.EventRes.OnChat) => console.log(event));
 // 监听房间信息变化
 cola.listen("onChangeRoom", async (event: Cola.EventRes.OnChangeRoom) => console.log(event));
+// 监听玩家自定义状态变化
+cola.listen("onChangeCustomPlayerStatus", async (event: Cola.EventRes.OnChangeCustomPlayerStatus) => console.log(event));
 ```
 
 ### 玩家进入游戏大厅
@@ -158,7 +160,17 @@ const roomInfo: Cola.Room = await cola.enterRoom({ rid, playerInfoExtra: playerI
 	* isForbidJoin `{boolean}` 是否禁止加入房间（可选）
 
 ```typescript
-const newRoomInfo: Cola.Room = await cola.changeRoom({ name: "新de房间名", owner: "新房主id" })
+const newRoomInfo: Cola.Room = await cola.changeRoom({ name: "新de房间名", owner: "新房主id" });
+```
+
+### 修改玩家自定义状态
+
+> changeCustomPlayerStatus(customPlayerStatus: number): Promise<Cola.Status>
+
+* customPlayerStatus `{number}` 修改玩家状态参数
+
+```typescript
+const status: Cola.Status = await cola.changeCustomPlayerStatus(1);
 ```
 
 ### 在房间内发送消息给指定用户
@@ -196,40 +208,10 @@ interface Init {
 > 事件监听类型
 
 ```typescript
-type Event = "io-error" | "close" | "onKick" | "heartbeat timeout" | "onRoomCreate" | "onHallAdd" | "onRoomAdd" | "onChat";
+type Event = "io-error" | "close" | "onKick" | "heartbeat timeout" | "onRoomCreate" | "onHallAdd" | "onRoomAdd" | "onChangeRoom" | "onChangeCustomPlayerStatus" | "onChat";
 ```
 
-### EventRes.OnHallAdd
-
-> 玩家加入大厅事件
-
-```typescript
-interface OnHallAdd extends PlayerInitInfo {
-
-}
-```
-
-### EventRes.OnRoomCreate
-
-> 房间创建事件
-
-```typescript
-interface OnRoomCreate extends Room {
-
-}
-```
-
-### EventRes.OnRoomAdd
-
-> 玩家加入房间事件
-
-```typescript
-interface OnRoomAdd extends PlayerInfo {
-
-}
-```
-
-### EventRes.OnKick
+#### EventRes.OnKick
 
 > 玩家离开房间事件
 
@@ -242,7 +224,62 @@ interface OnKick {
 }
 ```
 
-### EventRes.OnChat
+#### EventRes.OnRoomCreate
+
+> 房间创建事件
+
+```typescript
+interface OnRoomCreate extends Room {
+
+}
+```
+
+#### EventRes.OnHallAdd
+
+> 玩家加入大厅事件
+
+```typescript
+interface OnHallAdd extends PlayerInitInfo {
+
+}
+```
+
+#### EventRes.OnRoomAdd
+
+> 玩家加入房间事件
+
+```typescript
+interface OnRoomAdd extends PlayerInfo {
+
+}
+```
+
+#### EventRes.OnChangeRoom
+
+> 房间信息变更事件
+
+```typescript
+interface OnChangeRoom extends Room {
+
+}
+```
+
+#### EventRes.onChangeCustomPlayerStatus
+
+> 玩家自定义状态变更事件
+
+```typescript
+interface OnChangeCustomPlayerStatus {
+	// 玩家uid
+	changePlayerId: string;
+	// 玩家自定义状态
+	customPlayerStatus: number;
+	// 房间信息
+  roomInfo: Room;
+}
+```
+
+#### EventRes.OnChat
 
 > 玩家发送消息事件
 
@@ -257,7 +294,9 @@ interface OnChat {
 }
 ```
 
-### Params.CreateRoom
+### Params
+
+#### Params.CreateRoom
 
 >  创建房间请求参数
 
@@ -282,7 +321,7 @@ interface CreateRoom {
 }
 ```
 
-### Params.EnterRoom
+#### Params.EnterRoom
 
 > 进入房间请求参数
 
@@ -295,7 +334,7 @@ export interface EnterRoom {
 }
 ```
 
-### Params.ChangeRoom
+#### Params.ChangeRoom
 
 > 房主修改房间信息
 

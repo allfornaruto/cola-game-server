@@ -56,4 +56,12 @@ export class Player {
     this.commonNetworkState = 1;
     this.relayNetworkState = 3;
   }
+
+  /**
+   * 修改玩家状态
+   * @param {number} customPlayerStatus 自定义玩家状态
+   */
+  public changeCustomPlayerStatus(customPlayerStatus: number) {
+    this.customPlayerStatus = customPlayerStatus;
+  }
 }

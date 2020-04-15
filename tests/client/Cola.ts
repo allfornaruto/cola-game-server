@@ -118,6 +118,25 @@ export default class ColaClient {
   }
 
   /**
+   * 修改玩家状态
+   * @param {number} customPlayerStatus 修改玩家状态参数
+   */
+  public changeCustomPlayerStatus(customPlayerStatus: number): Promise<Cola.Status> {
+    return new Promise((resolve, reject) => {
+      const requestData: Cola.Request.ChangeCustomPlayerStatus = {
+        customPlayerStatus
+      };
+      this.client.request("game.gameHandler.changeCustomPlayerStatus", requestData, (res: Cola.Response.ChangeCustomPlayerStatus) => {
+        if (res.code === 200){
+          resolve(res.data);
+        } else {
+          reject(res);
+        }
+      });
+    })
+  }
+
+  /**
    * 在房间内发送消息给指定用户
    * @param {string[]} uidList 用户uid数组
    * @param {string} content 发送内容

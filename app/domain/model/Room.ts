@@ -165,4 +165,14 @@ export class Room {
       if (params.isForbidJoin) this.isForbidJoin = params.isForbidJoin;
       return this.getRoomInfo();
     }
+
+    /**
+     * 修改玩家状态
+     * @param {string} uid
+     * @param {number} customPlayerStatus 自定义玩家状态
+     */
+    public changePlayerInfo(uid: string, customPlayerStatus: number) {
+      const targetPlayer = this.findPlayer(uid);
+      targetPlayer.changeCustomPlayerStatus(customPlayerStatus);
+    }
 }

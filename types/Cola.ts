@@ -53,10 +53,11 @@ export namespace Cola {
     }
 
     /**
-     *
+     * @name 修改玩家状态参数
+     * @field {number} customPlayerStatus  自定义玩家状态
      */
     export interface ChangeCustomPlayerStatus {
-
+      customPlayerStatus: number;
     }
 
     /**
@@ -102,6 +103,11 @@ export namespace Cola {
       message: string;
       data: Room;
     }
+    export interface ChangeCustomPlayerStatus {
+      code: number;
+      message: string;
+      data: Status;
+    }
     export interface SendToClient {
       code: number;
       message: string;
@@ -120,6 +126,17 @@ export namespace Cola {
     }
     export interface OnChangeRoom extends Room {
 
+    }
+    /**
+     * @name 玩家自定义状态变化广播回调参数
+     * @field {string} changePlayerId  玩家ID
+     * @field {number} customPlayerStatus  玩家自定义状态
+     * @field {Room} roomInfo  房间信息
+     */
+    export interface OnChangeCustomPlayerStatus {
+      changePlayerId: string;
+      customPlayerStatus: number;
+      roomInfo: Room;
     }
 
     /**
@@ -193,7 +210,7 @@ export namespace Cola {
     }
   }
 
-  export type Event = "io-error" | "close" | "onKick" | "heartbeat timeout" | "onRoomCreate" | "onHallAdd" | "onRoomAdd" | "onChangeRoom" | "onChat";
+  export type Event = "io-error" | "close" | "onKick" | "heartbeat timeout" | "onRoomCreate" | "onHallAdd" | "onRoomAdd" | "onChangeRoom" | "onChangeCustomPlayerStatus" | "onChat";
 
   /**
    * @name Cola客户端初始化参数

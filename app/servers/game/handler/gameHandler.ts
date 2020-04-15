@@ -271,7 +271,33 @@ export class GameHandler {
    * @param {BackendSession} session
    */
   async changeCustomPlayerStatus(msg: Cola.Request.ChangeCustomPlayerStatus, session: BackendSession): Promise<Cola.Response.ChangeCustomPlayerStatus> {
+    const customPlayerStatus = msg.customPlayerStatus;
+    // 从Updater中找到目标room
+    const uid = session.uid;
+    const rid = session.get("room");
+    const room = Updater.findRoom(rid);
 
+    // 修改房间内玩家自定义状态
+    room.changePlayerInfo(uid, customPlayerStatus);
+    const newRoomInfo = room.getRoomInfo();
+
+    // 向该房间内所有成员广播房间信息变化事件
+    const channelService = this.app.get('channelService');
+    const channel = channelService.getChannel(rid);
+    const param: Cola.EventRes.OnChangeCustomPlayerStatus = {
+      customPlayerStatus,
+      changePlayerId: uid,
+      roomInfo: newRoomInfo,
+    };
+    channel.pushMessage('onChangeCustomPlayerStatus', param);
+
+    return {
+      code: 200,
+      message: "",
+      data: {
+        status: true,
+      },
+    }
   }
 
   /**
