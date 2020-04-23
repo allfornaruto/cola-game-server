@@ -201,8 +201,6 @@ const status: Cola.Status = await cola.startFrameSync();
 const status: Cola.Status = await cola.stopFrameSync();
 ```
 
-### 停止帧同步
-
 ### 在房间内发送消息给指定用户
 
 > sendMsg(uidList: string[], content: string): Promise<Cola.Status>
