@@ -112,18 +112,18 @@ await cola.enterHall();
 
 ```typescript
 const playerInfoExtra: Cola.PlayerInfoExtra = {
-  teamId: "1",
-  customPlayerStatus: 0,
-  customProfile: JSON.stringify({ hp: 100, mp: 80 }),
-  matchAttributes: []
+	teamId: "1",
+	customPlayerStatus: 0,
+	customProfile: JSON.stringify({ hp: 100, mp: 80 }),
+	matchAttributes: []
 };
 const myRoom: Cola.Params.CreateRoom = {
-  name: "room-1977",
-  type: "0",
-  createType: 0,
-  maxPlayers: 2,
-  isPrivate: false,
-  customProperties: "",
+	name: "room-1977",
+	type: "0",
+	createType: 0,
+	maxPlayers: 2,
+	isPrivate: false,
+	customProperties: "",
 	teamList: [],
 	playerInfoExtra: playerInfoExtra
 };
@@ -305,7 +305,7 @@ interface OnChangeCustomPlayerStatus {
 	// 玩家自定义状态
 	customPlayerStatus: number;
 	// 房间信息
-  roomInfo: Room;
+	roomInfo: Room;
 }
 ```
 
