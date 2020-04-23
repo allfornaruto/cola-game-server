@@ -70,6 +70,7 @@ export default class Updater {
         if (this.rooms.size <= 0) return;
         // 遍历房间来更新帧
         this.rooms.forEach((room: Room) => {
+            if (room.frameSyncState === 0) return;
             // 大于一帧的间隔
             room.stepUpdateTime += dt;
             if (room.stepUpdateTime >= constants.STEP_INTERVAL) {

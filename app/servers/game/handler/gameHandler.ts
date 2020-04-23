@@ -210,6 +210,8 @@ export class GameHandler {
 
   /**
    * 房主修改房间信息
+   * @description 修改成功后，房间内全部成员都会收到一条修改房间广播 onChangeRoom，Room实例将更新。
+   * @description 只有房主有权限修改房间
    * @param {Cola.Request.ChangeRoomMsg} msg 房间变更参数
    * @param {Object} session
    */
@@ -267,6 +269,8 @@ export class GameHandler {
 
   /**
    * 玩家修改自定义状态
+   * @description 修改玩家状态是修改 Player 中的 customPlayerStatus 字段，玩家的状态由开发者自定义。
+   * @description 修改成功后，房间内全部成员都会收到一条修改玩家状态广播 onChangeCustomPlayerStatus，Room实例将更新。
    * @param {Cola.Request.ChangeCustomPlayerStatus} msg 修改自定义状态参数
    * @param {BackendSession} session
    */
@@ -297,6 +301,54 @@ export class GameHandler {
       data: {
         status: true,
       },
+    }
+  }
+
+  /**
+   * 开始帧同步
+   * 房间内任意一个玩家成功调用该接口将导致全部玩家开始接收帧广播
+   * 调用成功后房间内全部成员将收到 onStartFrameSync 广播。该接口会修改房间帧同步状态为“已开始帧同步”
+   * @param {Cola.Request.StartFrameSync} msg 开始帧同步参数
+   * @param {BackendSession} session
+   */
+  async startFrameSync(msg: Cola.Request.StartFrameSync, session: BackendSession): Promise<Cola.Response.StartFrameSync> {
+    // 从Updater中找到目标room
+    const rid = session.get("room");
+    const room = Updater.findRoom(rid);
+
+    // 开始帧同步
+    room.startFrameSync();
+
+    return {
+      code: 200,
+      message: "",
+      data: {
+        status: true
+      }
+    }
+  }
+
+  /**
+   * 停止帧同步
+   * 房间内任意一个玩家成功调用该接口将导致全部玩家停止接收帧广播
+   * 调用成功后房间内全部成员将收到 onStopFrameSync 广播。该接口会修改房间帧同步状态为“已停止帧同步”
+   * @param {Cola.Request.StopFrameSync} msg 停止帧同步参数
+   * @param {BackendSession} session
+   */
+  async stopFrameSync(msg: Cola.Request.StopFrameSync, session: BackendSession): Promise<Cola.Response.StopFrameSync> {
+    // 从Updater中找到目标room
+    const rid = session.get("room");
+    const room = Updater.findRoom(rid);
+
+    // 停止帧同步
+    room.stopFrameSync();
+
+    return {
+      code: 200,
+      message: "",
+      data: {
+        status: true
+      }
     }
   }
 

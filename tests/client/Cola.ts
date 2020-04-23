@@ -102,6 +102,8 @@ export default class ColaClient {
 
   /**
    * 房主修改房间信息
+   * @description 修改成功后，房间内全部成员都会收到一条修改房间广播 onChangeRoom，Room实例将更新。
+   * @description 只有房主有权限修改房间
    * @param {Cola.Params.ChangeRoom} params 修改房间信息参数
    */
   public changeRoom(params: Cola.Params.ChangeRoom): Promise<Cola.Room> {
@@ -119,6 +121,8 @@ export default class ColaClient {
 
   /**
    * 修改玩家状态
+   * @description 修改玩家状态是修改 Player 中的 customPlayerStatus 字段，玩家的状态由开发者自定义。
+   * @description 修改成功后，房间内全部成员都会收到一条修改玩家状态广播 onChangeCustomPlayerStatus，Room实例将更新。
    * @param {number} customPlayerStatus 修改玩家状态参数
    */
   public changeCustomPlayerStatus(customPlayerStatus: number): Promise<Cola.Status> {
@@ -127,6 +131,40 @@ export default class ColaClient {
         customPlayerStatus
       };
       this.client.request("game.gameHandler.changeCustomPlayerStatus", requestData, (res: Cola.Response.ChangeCustomPlayerStatus) => {
+        if (res.code === 200){
+          resolve(res.data);
+        } else {
+          reject(res);
+        }
+      });
+    })
+  }
+
+  /**
+   * 房间内任意一个玩家成功调用该接口将导致全部玩家开始接收帧广播
+   * 调用成功后房间内全部成员将收到 onStartFrameSync 广播。该接口会修改房间帧同步状态为“已开始帧同步”
+   */
+  public startFrameSync(): Promise<Cola.Status> {
+    return new Promise((resolve, reject) => {
+      const requestData: Cola.Request.StartFrameSync = {};
+      this.client.request("game.gameHandler.startFrameSync", requestData, (res: Cola.Response.StartFrameSync) => {
+        if (res.code === 200){
+          resolve(res.data);
+        } else {
+          reject(res);
+        }
+      });
+    })
+  }
+
+  /**
+   * 房间内任意一个玩家成功调用该接口将导致全部玩家停止接收帧广播
+   * 调用成功后房间内全部成员将收到 onStopFrameSync 广播。该接口会修改房间帧同步状态为“已停止帧同步”
+   */
+  public stopFrameSync(): Promise<Cola.Status> {
+    return new Promise((resolve, reject) => {
+      const requestData: Cola.Request.StopFrameSync = {};
+      this.client.request("game.gameHandler.startFrameSync", requestData, (res: Cola.Response.StopFrameSync) => {
         if (res.code === 200){
           resolve(res.data);
         } else {

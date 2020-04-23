@@ -175,4 +175,18 @@ export class Room {
       const targetPlayer = this.findPlayer(uid);
       targetPlayer.changeCustomPlayerStatus(customPlayerStatus);
     }
+
+    /**
+     * 开始帧同步
+     */
+    public startFrameSync() {
+      this.frameSyncState = 1;
+    }
+
+    /**
+     * 停止帧同步
+     */
+    public stopFrameSync() {
+      this.frameSyncState = 0;
+    }
 }

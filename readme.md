@@ -150,6 +150,9 @@ const roomInfo: Cola.Room = await cola.enterRoom({ rid, playerInfoExtra: playerI
 
 ### 房主修改房间信息
 
+* 修改成功后，房间内全部成员都会收到一条修改房间广播 onChangeRoom，Room实例将更新。
+* 只有房主有权限修改房间
+
 > changeRoom(params: Cola.Params.ChangeRoom): Promise<Cola.Room>
 
 * params `{Cola.Params.ChangeRoom}` 修改房间信息参数
@@ -165,6 +168,9 @@ const newRoomInfo: Cola.Room = await cola.changeRoom({ name: "新de房间名", o
 
 ### 修改玩家自定义状态
 
+* 修改玩家状态是修改 Player 中的 customPlayerStatus 字段，玩家的状态由开发者自定义。
+* 修改成功后，房间内全部成员都会收到一条修改玩家状态广播 onChangeCustomPlayerStatus，Room实例将更新。
+
 > changeCustomPlayerStatus(customPlayerStatus: number): Promise<Cola.Status>
 
 * customPlayerStatus `{number}` 修改玩家状态参数
@@ -172,6 +178,30 @@ const newRoomInfo: Cola.Room = await cola.changeRoom({ name: "新de房间名", o
 ```typescript
 const status: Cola.Status = await cola.changeCustomPlayerStatus(1);
 ```
+
+### 开始帧同步
+
+* 房间内任意一个玩家成功调用该接口将导致全部玩家开始接收帧广播
+* 调用成功后房间内全部成员将收到 onStartFrameSync 广播。该接口会修改房间帧同步状态为“已开始帧同步”
+
+> startFrameSync(): Promise<Cola.Status>
+
+```typescript
+const status: Cola.Status = await cola.startFrameSync();
+```
+
+### 停止帧同步
+
+* 房间内任意一个玩家成功调用该接口将导致全部玩家停止接收帧广播
+* 调用成功后房间内全部成员将收到 onStopFrameSync 广播。该接口会修改房间帧同步状态为“已停止帧同步”
+
+> stopFrameSync(): Promise<Cola.Status>
+
+```typescript
+const status: Cola.Status = await cola.stopFrameSync();
+```
+
+### 停止帧同步
 
 ### 在房间内发送消息给指定用户
 

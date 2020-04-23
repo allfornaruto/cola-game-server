@@ -61,6 +61,20 @@ export namespace Cola {
     }
 
     /**
+     * @name 开始帧同步参数
+     */
+    export interface StartFrameSync {
+
+    }
+
+    /**
+     * @name 停止帧同步参数
+     */
+    export interface StopFrameSync {
+
+    }
+
+    /**
      * @name 离开房间请求参数
      * @field {string} rid 房间ID
      */
@@ -109,6 +123,16 @@ export namespace Cola {
       data: Status;
     }
     export interface SendToClient {
+      code: number;
+      message: string;
+      data: Status;
+    }
+    export interface StartFrameSync {
+      code: number;
+      message: string;
+      data: Status;
+    }
+    export interface StopFrameSync {
       code: number;
       message: string;
       data: Status;
