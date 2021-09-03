@@ -1,15 +1,17 @@
-// 客户端指令
+/**
+ * 客户端指令
+ */
 export default class Command {
-    // 用户名
-    public playerName: string;
-    // 具体指令
-    public direction: number;
-    // 第几帧
-    public stepTime: number;
+  // 用户Id
+  public playerId: string;
+  // 用户帧内容
+  public direction: string;
+  // 第几帧
+  public stepTime: number;
 
-    public constructor(playerName: string, direction: number, stepTime: number) {
-        this.playerName = playerName;
-        this.direction = direction;
-        this.stepTime = stepTime;
-    }
+  public constructor(playerId: string, direction: string, stepTime: number) {
+    this.playerId = playerId;
+    this.direction = direction;
+    this.stepTime = stepTime;
+  }
 }

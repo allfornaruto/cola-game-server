@@ -1,10 +1,11 @@
-import { Application, BackendSession, ChannelService } from 'pinus';
-import { Cola } from '../../../../types/Cola';
+import { Application, BackendSession, ChannelService } from "pinus";
+import { Cola } from "../../../../types/Cola";
 import { v4 as uuid } from "uuid";
 import { CreatePlayerParams, Player } from "../../../domain/model/Player";
 import { AddRoomParams, Room } from "../../../domain/model/Room";
 import Updater from "../../../domain/Updater";
 import { changeOtherPlayerSession } from "../../../util/func";
+import Command from "../../../domain/model/Command";
 
 export default function (app: Application) {
   return new GameHandler(app);
@@ -14,7 +15,7 @@ export class GameHandler {
   private channelService: ChannelService;
 
   constructor(private app: Application) {
-    this.channelService = app.get('channelService');
+    this.channelService = app.get("channelService");
   }
 
   /**
@@ -24,34 +25,34 @@ export class GameHandler {
    */
   async sendToClient(msg: Cola.Request.SendToClient, session: BackendSession): Promise<Cola.Response.SendToClient> {
     const { content, uidList } = msg;
-    const room = session.get('room');
+    const room = session.get("room");
     const fromUid = session.uid;
-    const fromName = session.get('name');
+    const fromName = session.get("name");
     console.log(`sendToClient room=${room} fromName=${fromName}[${fromUid}] content=${content} uidList=${JSON.stringify(uidList)} `);
-    if (!uidList || (uidList.length === 0)) return;
+    if (!uidList || uidList.length === 0) return;
 
-    const channelService = this.app.get('channelService');
+    const channelService = this.app.get("channelService");
     const channel = channelService.getChannel(room);
     const param: Cola.EventRes.OnChat = {
       msg: content,
       from: fromUid,
-      target: uidList
+      target: uidList,
     };
     const pushArr = [];
     uidList.forEach(uid => {
       const targetUid = uid;
-      const targetServerId = channel.getMember(targetUid)['sid'];
+      const targetServerId = channel.getMember(targetUid)["sid"];
       pushArr.push({ uid: targetUid, sid: targetServerId });
     });
     console.log(`sendToClient pushMessageByUids onChat param = ${JSON.stringify(param)} pushArr = ${JSON.stringify(uidList)}`);
-    channelService.pushMessageByUids('onChat', param, pushArr);
+    channelService.pushMessageByUids("onChat", param, pushArr);
     return {
       code: 200,
       message: "",
       data: {
-        status: true
-      }
-    }
+        status: true,
+      },
+    };
   }
 
   /**
@@ -66,20 +67,24 @@ export class GameHandler {
     console.log(`[begin] game.gameHandler.createRoom uid = ${session.uid}`);
     // 创建player
     const uid = session.uid;
-    const gameId = session.get('gameId');
-    const name = session.get('name');
-    const serverId = session.get('serverId');
+    const gameId = session.get("gameId");
+    const name = session.get("name");
+    const serverId = session.get("serverId");
     const teamId = playerInfoExtra.teamId;
     const customPlayerStatus = playerInfoExtra.customPlayerStatus;
     const customProfile = playerInfoExtra.customProfile;
     const matchAttributes = playerInfoExtra.matchAttributes;
 
-    session.set('teamId', teamId);
-    session.set('customPlayerStatus', customPlayerStatus);
-    session.set('customProfile', customProfile);
-    session.set('matchAttributes', matchAttributes);
+    session.set("teamId", teamId);
+    session.set("customPlayerStatus", customPlayerStatus);
+    session.set("customProfile", customProfile);
+    session.set("matchAttributes", matchAttributes);
     const sessionPushPlayerInfoExtraResult: any = await session.apushAll();
-    if (sessionPushPlayerInfoExtraResult) console.error('game.gameHandler.createRoom sessionPushPlayerInfoExtraResult failed! error is : %j', sessionPushPlayerInfoExtraResult.stack);
+    if (sessionPushPlayerInfoExtraResult)
+      console.error(
+        "game.gameHandler.createRoom sessionPushPlayerInfoExtraResult failed! error is : %j",
+        sessionPushPlayerInfoExtraResult.stack
+      );
 
     const playerInfo: Cola.PlayerInfo = {
       uid,
@@ -98,35 +103,38 @@ export class GameHandler {
     channel.add(playerInfo.uid, serverId);
 
     // 创建room
-    const addRoomParams: AddRoomParams = Object.assign({
-      rid,
-      owner: uid,
-      playerList: [player],
-      channel,
-    }, msg);
+    const addRoomParams: AddRoomParams = Object.assign(
+      {
+        rid,
+        owner: uid,
+        playerList: [player],
+        channel,
+      },
+      msg
+    );
     const room = new Room(addRoomParams);
 
     // 将room放入Updater中保存
     Updater.addRoom(rid, room);
 
     // 将room信息保存在用户的session中
-    session.set('room', rid);
-    session.set('ownRoom', rid);
+    session.set("room", rid);
+    session.set("ownRoom", rid);
     const sessionPushResult: any = await session.apushAll();
-    if (sessionPushResult) console.error('gameHandler createRoom sessionPushResult failed! error is : %j', sessionPushResult.stack);
+    if (sessionPushResult) console.error("gameHandler createRoom sessionPushResult failed! error is : %j", sessionPushResult.stack);
 
     // 向游戏大厅广播房间创建的消息
     const onRoomCreateMsg: Cola.EventRes.OnRoomCreate = room.getRoomInfo();
     const hallChannel = this.channelService.getChannel(gameId);
-    hallChannel.pushMessage('onRoomCreate', onRoomCreateMsg);
+    hallChannel.pushMessage("onRoomCreate", onRoomCreateMsg);
 
     console.log(`[end] game.gameHandler.createRoom uid = ${session.uid}`);
 
     return {
       code: 200,
-      message: '',
-      data: onRoomCreateMsg
-    }
+      message: "",
+      data: onRoomCreateMsg,
+    };
   }
 
   /**
@@ -135,39 +143,42 @@ export class GameHandler {
    * @param {Object} session
    */
   async enterRoom(msg: Cola.Request.EnterRoomMsg, session: BackendSession): Promise<Cola.Response.EnterRoom> {
-
     console.log(`[begin] game.gameHandler.enterRoom uid = ${session.uid} rid = ${msg.rid}`);
 
     const playerInfoExtra = msg.playerInfoExtra;
-    session.set('teamId', playerInfoExtra.teamId);
-    session.set('customPlayerStatus', playerInfoExtra.customPlayerStatus);
-    session.set('customProfile', playerInfoExtra.customProfile);
-    session.set('matchAttributes', playerInfoExtra.matchAttributes);
+    session.set("teamId", playerInfoExtra.teamId);
+    session.set("customPlayerStatus", playerInfoExtra.customPlayerStatus);
+    session.set("customProfile", playerInfoExtra.customProfile);
+    session.set("matchAttributes", playerInfoExtra.matchAttributes);
     const sessionPushPlayerInfoExtraResult: any = await session.apushAll();
-    if (sessionPushPlayerInfoExtraResult) console.error('game.gameHandler.createRoom sessionPushPlayerInfoExtraResult failed! error is : %j', sessionPushPlayerInfoExtraResult.stack);
+    if (sessionPushPlayerInfoExtraResult)
+      console.error(
+        "game.gameHandler.createRoom sessionPushPlayerInfoExtraResult failed! error is : %j",
+        sessionPushPlayerInfoExtraResult.stack
+      );
 
     let { rid } = msg;
 
     // 先查询用户是否已经在目标房间内
-    const userRid = session.get('room');
+    const userRid = session.get("room");
     if (!!userRid) {
       console.warn(`该用户已进入房间，uid = ${session.uid}, rid = ${rid}, userRid = ${userRid}`);
       return {
         code: 500,
         message: `该用户已进入房间`,
-        data: null
-      }
+        data: null,
+      };
     }
 
     // 创建player
     const uid = session.uid;
-    const gameId = session.get('gameId');
-    const name = session.get('name');
-    const teamId = session.get('teamId');
-    const customPlayerStatus = session.get('customPlayerStatus');
-    const customProfile = session.get('customProfile');
-    const matchAttributes = session.get('matchAttributes');
-    const serverId = session.get('serverId');
+    const gameId = session.get("gameId");
+    const name = session.get("name");
+    const teamId = session.get("teamId");
+    const customPlayerStatus = session.get("customPlayerStatus");
+    const customProfile = session.get("customProfile");
+    const matchAttributes = session.get("matchAttributes");
+    const serverId = session.get("serverId");
 
     const playerInfo: Cola.PlayerInfo = {
       uid,
@@ -190,22 +201,23 @@ export class GameHandler {
     room.addPlayer(player);
 
     // 将room信息保存在用户的session中
-    session.set('room', rid);
-    session.set('ownRoom', null);
+    session.set("room", rid);
+    session.set("ownRoom", null);
     const sessionPushResult: any = await session.apushAll();
-    if (sessionPushResult) console.error('gameHandler enterRoom session.apushAll for session service failed! error is : %j', sessionPushResult.stack);
+    if (sessionPushResult)
+      console.error("gameHandler enterRoom session.apushAll for session service failed! error is : %j", sessionPushResult.stack);
 
     // 对房间内的所有成员广播onRoomAdd事件
     const param: Cola.EventRes.OnRoomAdd = playerInfo;
-    channel.pushMessage('onRoomAdd', param);
+    channel.pushMessage("onRoomAdd", param);
 
     console.log(`[end] game.gameHandler.enterRoom uid = ${uid} success rid = ${rid}`);
 
     return {
       code: 200,
       message: "",
-      data: room.getRoomInfo()
-    }
+      data: room.getRoomInfo(),
+    };
   }
 
   /**
@@ -221,8 +233,8 @@ export class GameHandler {
       return {
         code: 500,
         message: "非房主无法修改房间信息",
-        data: null
-      }
+        data: null,
+      };
     }
 
     // 从Updater中找到目标room
@@ -244,7 +256,10 @@ export class GameHandler {
             resolve();
           });
         } catch (e) {
-          console.error(`gameHandler changeRoom changeOtherPlayerSession fail frontendId = ${newOwner.frontendId} uid = ${newOwner.uid}`, e);
+          console.error(
+            `gameHandler changeRoom changeOtherPlayerSession fail frontendId = ${newOwner.frontendId} uid = ${newOwner.uid}`,
+            e
+          );
           // 还原旧房主
           session.set("ownRoom", ownRoom);
         }
@@ -255,16 +270,16 @@ export class GameHandler {
     const newRoomInfo = room.changeRoomInfo(msg);
 
     // 向该房间内所有成员广播房间信息变化事件
-    const channelService = this.app.get('channelService');
+    const channelService = this.app.get("channelService");
     const channel = channelService.getChannel(ownRoom);
     const param: Cola.EventRes.OnChangeRoom = newRoomInfo;
-    channel.pushMessage('onChangeRoom', param);
+    channel.pushMessage("onChangeRoom", param);
 
     return {
       code: 200,
       message: "",
-      data: newRoomInfo
-    }
+      data: newRoomInfo,
+    };
   }
 
   /**
@@ -274,7 +289,10 @@ export class GameHandler {
    * @param {Cola.Request.ChangeCustomPlayerStatus} msg 修改自定义状态参数
    * @param {BackendSession} session
    */
-  async changeCustomPlayerStatus(msg: Cola.Request.ChangeCustomPlayerStatus, session: BackendSession): Promise<Cola.Response.ChangeCustomPlayerStatus> {
+  async changeCustomPlayerStatus(
+    msg: Cola.Request.ChangeCustomPlayerStatus,
+    session: BackendSession
+  ): Promise<Cola.Response.ChangeCustomPlayerStatus> {
     const customPlayerStatus = msg.customPlayerStatus;
     // 从Updater中找到目标room
     const uid = session.uid;
@@ -286,14 +304,14 @@ export class GameHandler {
     const newRoomInfo = room.getRoomInfo();
 
     // 向该房间内所有成员广播房间信息变化事件
-    const channelService = this.app.get('channelService');
+    const channelService = this.app.get("channelService");
     const channel = channelService.getChannel(rid);
     const param: Cola.EventRes.OnChangeCustomPlayerStatus = {
       customPlayerStatus,
       changePlayerId: uid,
       roomInfo: newRoomInfo,
     };
-    channel.pushMessage('onChangeCustomPlayerStatus', param);
+    channel.pushMessage("onChangeCustomPlayerStatus", param);
 
     return {
       code: 200,
@@ -301,7 +319,7 @@ export class GameHandler {
       data: {
         status: true,
       },
-    }
+    };
   }
 
   /**
@@ -323,9 +341,9 @@ export class GameHandler {
       code: 200,
       message: "",
       data: {
-        status: true
-      }
-    }
+        status: true,
+      },
+    };
   }
 
   /**
@@ -347,9 +365,9 @@ export class GameHandler {
       code: 200,
       message: "",
       data: {
-        status: true
-      }
-    }
+        status: true,
+      },
+    };
   }
 
   /**
@@ -369,5 +387,39 @@ export class GameHandler {
     this.app.rpc.game.gameRemote.kick.route(session, true)(session.uid, this.app.get("serverId"), rid);
 
     console.log(`[end] game.gameHandler.leaveRoom uid = ${session.uid} rid = ${rid}`);
+  }
+
+  /**
+   * 发送帧同步数据
+   * @param msg
+   * @param session
+   */
+  async sendFrame(msg: Cola.Request.SendFrame, session: BackendSession): Promise<Cola.Response.SendFrame> {
+    const { data } = msg;
+
+    console.log(`发送帧同步数据 data=${data}`);
+
+    // 从Updater中找到目标room
+    const uid = session.uid;
+    const rid = session.get("room");
+    const room = Updater.findRoom(rid);
+
+    if (room.frameSyncState === Cola.FrameSyncState.STOP) {
+      return {
+        code: 500,
+        message: "房间未开始帧同步",
+        data: null,
+      };
+    }
+
+    Updater.addCommand(rid, new Command(uid, data, room.stepTime));
+
+    return {
+      code: 200,
+      message: "",
+      data: {
+        status: true,
+      },
+    };
   }
 }

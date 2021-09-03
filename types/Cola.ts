@@ -1,9 +1,7 @@
 export namespace Cola {
   export namespace Request {
     export type GetConnectorEntry = string;
-    export interface ConnectorEnter extends PlayerInitInfo {
-
-    }
+    export interface ConnectorEnter extends PlayerInitInfo {}
     /**
      * @name 创建房间请求参数
      * @field {string} gameId  游戏ID
@@ -63,16 +61,19 @@ export namespace Cola {
     /**
      * @name 开始帧同步参数
      */
-    export interface StartFrameSync {
+    export interface StartFrameSync {}
 
+    /**
+     * @name 发送帧数据参数
+     */
+    export interface SendFrame {
+      data: string;
     }
 
     /**
      * @name 停止帧同步参数
      */
-    export interface StopFrameSync {
-
-    }
+    export interface StopFrameSync {}
 
     /**
      * @name 离开房间请求参数
@@ -137,20 +138,31 @@ export namespace Cola {
       message: string;
       data: Status;
     }
+    export interface SendFrame {
+      code: number;
+      message: string;
+      data: Status;
+    }
   }
+
+  export type Event =
+    | "io-error"
+    | "close"
+    | "onKick"
+    | "heartbeat timeout"
+    | "onRoomCreate"
+    | "onHallAdd"
+    | "onRoomAdd"
+    | "onChangeRoom"
+    | "onChangeCustomPlayerStatus"
+    | "onChat"
+    | "onRecvFrame";
+
   export namespace EventRes {
-    export interface OnRoomCreate extends Room {
-
-    }
-    export interface OnHallAdd extends PlayerInitInfo {
-
-    }
-    export interface OnRoomAdd extends PlayerInfo {
-
-    }
-    export interface OnChangeRoom extends Room {
-
-    }
+    export interface OnRoomCreate extends Room {}
+    export interface OnHallAdd extends PlayerInitInfo {}
+    export interface OnRoomAdd extends PlayerInfo {}
+    export interface OnChangeRoom extends Room {}
     /**
      * @name 玩家自定义状态变化广播回调参数
      * @field {string} changePlayerId  玩家ID
@@ -185,6 +197,12 @@ export namespace Cola {
       target: string[];
     }
 
+    /**
+     * @name 房间帧消息广播事件
+     * 一帧时间内房间内所有玩家向服务器发送帧消息的集合
+     *
+     */
+    export interface onRecvFrame extends Frame {}
   }
   export namespace Params {
     /**
@@ -214,8 +232,8 @@ export namespace Cola {
      * @field {PlayerInfoExtra} playerInfoExtra 加入房间用户额外信息参数
      */
     export interface EnterRoom {
-	    rid: string;
-	    playerInfoExtra: PlayerInfoExtra;
+      rid: string;
+      playerInfoExtra: PlayerInfoExtra;
     }
     /**
      * @name 房主修改房间信息
@@ -233,8 +251,6 @@ export namespace Cola {
       isForbidJoin?: boolean;
     }
   }
-
-  export type Event = "io-error" | "close" | "onKick" | "heartbeat timeout" | "onRoomCreate" | "onHallAdd" | "onRoomAdd" | "onChangeRoom" | "onChangeCustomPlayerStatus" | "onChat";
 
   /**
    * @name Cola客户端初始化参数
@@ -304,7 +320,7 @@ export namespace Cola {
     room?: string;
     ownRoom?: string | null;
   }
-   /**
+  /**
    * @name 前端服务器地址
    * @field {string} host IP地址
    * @field {number} port 端口
@@ -372,42 +388,27 @@ export namespace Cola {
   }
   /**
    * @name 帧数据
-   * @description 附加信息包含一个 number 类型随机种子，开发者可以使用帧 ID 与随机种子组合成一个值来初始化 RandomUtil 工具。
-   * @description time 为 SDK 拟合出来的时间，目的是使每一帧到达客户端的时间尽量均匀分布，并且时间间隔尽量接近帧率的倒数。
-   * @description isReplay 表示该帧是否为自动补帧产生的帧，自动补帧需要在初始化 Listener 时设置。
+   * @description isReplay 表示该帧是否为自动补帧产生的帧
    * @description items 数组表示各个客户端发送的帧消息，按照到达服务器时间先后进行排序（数组中第0个为最先到服务器）。
    * @field {number} frameId  帧ID
-   * @field {MGOBE.types.FrameItem[]} items  帧内容
-   * @field {MGOBE.types.FrameExtInfo} ext  附加信息
-   * @field {number} roomId  房间ID
-   * @field {number} time  该帧到达客户端时间
+   * @field {Command[]} items  帧内容
    * @field {boolean} isReplay  是否为补帧
    */
   export interface Frame {
     id: number;
-    items: MGOBE.types.FrameItem[];
-    ext: MGOBE.types.FrameExtInfo;
-    roomId: string;
-    time?: number;
-    isReplay?: boolean;
-  }
-  /**
-   * @name 帧数据附加信息
-   * @field {number} seed  随机数种子
-   */
-  export interface FrameExtInfo {
-    seed: number;
+    items: Command[];
+    isReplay: boolean;
   }
   /**
    * @name 帧内容
    * @field {string} playerId  玩家ID
-   * @field {object} data  玩家帧内容
-   * @field {number} timestamp  时间戳，各玩家本地发送帧的时间
+   * @field {string} direction  玩家帧内容
+   * @field {number} stepTime  第几帧
    */
-  export interface FrameItem {
+  export interface Command {
     playerId: string;
-    data: object;
-    timestamp: number;
+    direction: string;
+    stepTime: number;
   }
   /**
    * @name 创建房间方式
@@ -416,7 +417,7 @@ export namespace Cola {
    */
   export enum CreateRoomType {
     COMMON_CREATE = 0,
-    MATCH_CREATE = 1
+    MATCH_CREATE = 1,
   }
   /**
    * @name 房间帧同步状态
@@ -425,7 +426,7 @@ export namespace Cola {
    */
   export enum FrameSyncState {
     STOP = 0,
-    START = 1
+    START = 1,
   }
   /**
    * @name 玩家网络状态
@@ -438,7 +439,7 @@ export namespace Cola {
     COMMON_OFFLINE = 0,
     COMMON_ONLINE = 1,
     RELAY_OFFLINE = 2,
-    RELAY_ONLINE = 3
+    RELAY_ONLINE = 3,
   }
   /**
    * @name 团队属性

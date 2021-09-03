@@ -11,7 +11,7 @@ export default class ColaClient {
   private connectorHost: string;
   private connectorPort: number;
 
-  constructor(params: Cola.Init, options?: Cola.ColaOptions){
+  constructor(params: Cola.Init, options?: Cola.ColaOptions) {
     this.gameId = params.gameId;
     this.playerInitInfo = params.playerInitInfo;
     this.gateHost = params.gateHost;
@@ -62,10 +62,10 @@ export default class ColaClient {
         isPrivate: params.isPrivate,
         customProperties: params.customProperties,
         teamList: params.teamList,
-        playerInfoExtra: params.playerInfoExtra
+        playerInfoExtra: params.playerInfoExtra,
       };
       this.client.request("game.gameHandler.createRoom", requestData, (res: Cola.Response.CreateRoom) => {
-        if (res.code === 200){
+        if (res.code === 200) {
           resolve(res.data);
         } else {
           reject(res);
@@ -82,13 +82,13 @@ export default class ColaClient {
     return new Promise((resolve, reject) => {
       const requestData: Cola.Request.EnterRoomMsg = params;
       this.client.request("game.gameHandler.enterRoom", requestData, (res: Cola.Response.EnterRoom) => {
-        if (res.code === 200){
+        if (res.code === 200) {
           resolve(res.data);
         } else {
           reject(res);
         }
       });
-    })
+    });
   }
 
   /**
@@ -110,13 +110,13 @@ export default class ColaClient {
     return new Promise((resolve, reject) => {
       const requestData: Cola.Request.ChangeRoomMsg = params;
       this.client.request("game.gameHandler.changeRoom", requestData, (res: Cola.Response.ChangeRoom) => {
-        if (res.code === 200){
+        if (res.code === 200) {
           resolve(res.data);
         } else {
           reject(res);
         }
       });
-    })
+    });
   }
 
   /**
@@ -128,50 +128,71 @@ export default class ColaClient {
   public changeCustomPlayerStatus(customPlayerStatus: number): Promise<Cola.Status> {
     return new Promise((resolve, reject) => {
       const requestData: Cola.Request.ChangeCustomPlayerStatus = {
-        customPlayerStatus
+        customPlayerStatus,
       };
       this.client.request("game.gameHandler.changeCustomPlayerStatus", requestData, (res: Cola.Response.ChangeCustomPlayerStatus) => {
-        if (res.code === 200){
+        if (res.code === 200) {
           resolve(res.data);
         } else {
           reject(res);
         }
       });
-    })
+    });
   }
 
   /**
    * 房间内任意一个玩家成功调用该接口将导致全部玩家开始接收帧广播
+   *
    * 调用成功后房间内全部成员将收到 onStartFrameSync 广播。该接口会修改房间帧同步状态为“已开始帧同步”
    */
   public startFrameSync(): Promise<Cola.Status> {
     return new Promise((resolve, reject) => {
       const requestData: Cola.Request.StartFrameSync = {};
       this.client.request("game.gameHandler.startFrameSync", requestData, (res: Cola.Response.StartFrameSync) => {
-        if (res.code === 200){
+        if (res.code === 200) {
           resolve(res.data);
         } else {
           reject(res);
         }
       });
-    })
+    });
+  }
+
+  /**
+   * 发送帧数据参数
+   *
+   * 必须在调用startFrameSync之后才可调用该方法
+   *
+   */
+  public sendFrame(data: string): Promise<Cola.Status> {
+    return new Promise((resolve, reject) => {
+      const requestData: Cola.Request.SendFrame = { data };
+      this.client.request("game.gameHandler.sendFrame", requestData, (res: Cola.Response.SendFrame) => {
+        if (res.code === 200) {
+          resolve(res.data);
+        } else {
+          reject(res);
+        }
+      });
+    });
   }
 
   /**
    * 房间内任意一个玩家成功调用该接口将导致全部玩家停止接收帧广播
+   *
    * 调用成功后房间内全部成员将收到 onStopFrameSync 广播。该接口会修改房间帧同步状态为“已停止帧同步”
    */
   public stopFrameSync(): Promise<Cola.Status> {
     return new Promise((resolve, reject) => {
       const requestData: Cola.Request.StopFrameSync = {};
       this.client.request("game.gameHandler.startFrameSync", requestData, (res: Cola.Response.StopFrameSync) => {
-        if (res.code === 200){
+        if (res.code === 200) {
           resolve(res.data);
         } else {
           reject(res);
         }
       });
-    })
+    });
   }
 
   /**
@@ -183,7 +204,7 @@ export default class ColaClient {
     return new Promise((resolve, _) => {
       const requestData: Cola.Request.SendToClient = { uidList, content };
       this.client.request("game.gameHandler.sendToClient", requestData, (res: Cola.Response.SendToClient) => {
-        if (res.code === 200){
+        if (res.code === 200) {
           resolve(res.data);
         }
       });
@@ -202,23 +223,25 @@ export default class ColaClient {
    * 通过gate服务器查询分配的connector服务器
    */
   private getConnector(): Promise<Cola.Connector> {
-    return new Promise ((resolve, reject) => {
-      this.client.init({
-        host: this.gateHost,
-        port: this.gatePort,
-        log: this.debug,
-      },
-      () => {
-        const requestData: Cola.Request.GetConnectorEntry = this.playerInitInfo.uid;
-        this.client.request("gate.gateHandler.getConnectorEntry", requestData, (res: Cola.Response.GateGetConnectorEntry) => {
-          if (res.code === 200) {
-            resolve(res.data);
-          } else {
-            reject(res);
-          }
-        })
-      });
-    })
+    return new Promise((resolve, reject) => {
+      this.client.init(
+        {
+          host: this.gateHost,
+          port: this.gatePort,
+          log: this.debug,
+        },
+        () => {
+          const requestData: Cola.Request.GetConnectorEntry = this.playerInitInfo.uid;
+          this.client.request("gate.gateHandler.getConnectorEntry", requestData, (res: Cola.Response.GateGetConnectorEntry) => {
+            if (res.code === 200) {
+              resolve(res.data);
+            } else {
+              reject(res);
+            }
+          });
+        }
+      );
+    });
   }
 
   /**
@@ -226,20 +249,23 @@ export default class ColaClient {
    */
   private startConnectToHall(): Promise<void> {
     return new Promise((resolve, reject) => {
-      this.client.init({
-        host: this.connectorHost,
-        port: this.connectorPort,
-        log: this.debug,
-        }, () => {
-        const requestData: Cola.Request.ConnectorEnter = this.playerInitInfo;
-        this.client.request("connector.entryHandler.enter", requestData, (res: Cola.Response.ConnectorEnter) => {
-          if (res.code === 200){
-            resolve();
-          } else {
-            reject(res);
-          }
-        });
-      });
+      this.client.init(
+        {
+          host: this.connectorHost,
+          port: this.connectorPort,
+          log: this.debug,
+        },
+        () => {
+          const requestData: Cola.Request.ConnectorEnter = this.playerInitInfo;
+          this.client.request("connector.entryHandler.enter", requestData, (res: Cola.Response.ConnectorEnter) => {
+            if (res.code === 200) {
+              resolve();
+            } else {
+              reject(res);
+            }
+          });
+        }
+      );
     });
   }
 }
