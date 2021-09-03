@@ -3,9 +3,11 @@ import { Cola } from "../../../../types/Cola";
 import { v4 as uuid } from "uuid";
 import { CreatePlayerParams, Player } from "../../../domain/model/Player";
 import { AddRoomParams, Room } from "../../../domain/model/Room";
-import Updater from "../../../domain/Updater";
+import { getUpdateInstance } from "../../../domain/Updater";
 import { changeOtherPlayerSession } from "../../../util/func";
 import Command from "../../../domain/model/Command";
+
+const updateInstance = getUpdateInstance();
 
 export default function (app: Application) {
   return new GameHandler(app);
@@ -115,7 +117,7 @@ export class GameHandler {
     const room = new Room(addRoomParams);
 
     // 将room放入Updater中保存
-    Updater.addRoom(rid, room);
+    updateInstance.addRoom(rid, room);
 
     // 将room信息保存在用户的session中
     session.set("room", rid);
@@ -197,7 +199,7 @@ export class GameHandler {
     channel.add(playerInfo.uid, serverId);
 
     // 从Updater中找到目标room，并加入用户
-    const room = Updater.findRoom(rid);
+    const room = updateInstance.findRoom(rid);
     room.addPlayer(player);
 
     // 将room信息保存在用户的session中
@@ -238,7 +240,7 @@ export class GameHandler {
     }
 
     // 从Updater中找到目标room
-    const room = Updater.findRoom(ownRoom);
+    const room = updateInstance.findRoom(ownRoom);
 
     // 如果涉及到房主变更，需要修改新/旧房主的session ownRoom字段
     const owner = msg?.owner;
@@ -297,7 +299,7 @@ export class GameHandler {
     // 从Updater中找到目标room
     const uid = session.uid;
     const rid = session.get("room");
-    const room = Updater.findRoom(rid);
+    const room = updateInstance.findRoom(rid);
 
     // 修改房间内玩家自定义状态
     room.changePlayerInfo(uid, customPlayerStatus);
@@ -332,7 +334,7 @@ export class GameHandler {
   async startFrameSync(msg: Cola.Request.StartFrameSync, session: BackendSession): Promise<Cola.Response.StartFrameSync> {
     // 从Updater中找到目标room
     const rid = session.get("room");
-    const room = Updater.findRoom(rid);
+    const room = updateInstance.findRoom(rid);
 
     // 开始帧同步
     room.startFrameSync();
@@ -356,7 +358,7 @@ export class GameHandler {
   async stopFrameSync(msg: Cola.Request.StopFrameSync, session: BackendSession): Promise<Cola.Response.StopFrameSync> {
     // 从Updater中找到目标room
     const rid = session.get("room");
-    const room = Updater.findRoom(rid);
+    const room = updateInstance.findRoom(rid);
 
     // 停止帧同步
     room.stopFrameSync();
@@ -402,7 +404,7 @@ export class GameHandler {
     // 从Updater中找到目标room
     const uid = session.uid;
     const rid = session.get("room");
-    const room = Updater.findRoom(rid);
+    const room = updateInstance.findRoom(rid);
 
     if (room.frameSyncState === Cola.FrameSyncState.STOP) {
       return {
@@ -412,7 +414,7 @@ export class GameHandler {
       };
     }
 
-    Updater.addCommand(rid, new Command(uid, data, room.stepTime));
+    updateInstance.addCommand(rid, new Command(uid, data, room.stepTime));
 
     return {
       code: 200,

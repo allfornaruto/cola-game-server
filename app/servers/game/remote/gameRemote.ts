@@ -1,5 +1,8 @@
-import { Application, ChannelService, BackendSessionService } from 'pinus';
-import { Cola } from '../../../../types/Cola';
+import { Application, ChannelService, BackendSessionService } from "pinus";
+import { Cola } from "../../../../types/Cola";
+import { getUpdateInstance } from "../../../domain/Updater";
+
+const updateInstance = getUpdateInstance();
 
 export default function (app: Application) {
   return new GameRemote(app);
@@ -12,8 +15,8 @@ export class GameRemote {
 
   constructor(app: Application) {
     this.app = app;
-    this.channelService = app.get('channelService');
-    this.backendSessionService = app.get('backendSessionService');
+    this.channelService = app.get("channelService");
+    this.backendSessionService = app.get("backendSessionService");
   }
 
   /**
@@ -29,14 +32,14 @@ export class GameRemote {
       try {
         let channel = this.channelService.getChannel(gameId, true);
         const param: Cola.EventRes.OnHallAdd = playerInfo;
-        channel.pushMessage('onHallAdd', param);
+        channel.pushMessage("onHallAdd", param);
         channel.add(playerInfo.uid, serverId);
       } catch (e) {
         console.error(e);
         flag = false;
       } finally {
         const res = {
-          status: flag
+          status: flag,
         };
         resolve(res);
       }
@@ -97,7 +100,7 @@ export class GameRemote {
     };
     console.log(`after channelMembers = ${JSON.stringify(channel.getMembers())}`);
     console.log(`[${uid}]被踢出频道，rid = [${rid}]，sid = ${sid}`);
-    channel.pushMessage('onKick', param);
+    channel.pushMessage("onKick", param);
   }
 
   /**
@@ -122,11 +125,19 @@ export class GameRemote {
           teamId: result[0].settings.teamId,
           customPlayerStatus: result[0].settings.customPlayerStatus,
           customProfile: result[0].settings.customProfile,
-          matchAttributes: result[0].settings.matchAttributes
+          matchAttributes: result[0].settings.matchAttributes,
         };
         console.log(`promiseList user = ${JSON.stringify(user)}`);
         resolve(user);
       });
     });
+  }
+
+  /**
+   * 移除房间
+   * @param rid 房间id
+   */
+  public destroyRoom(rid: string) {
+    updateInstance.removeRoom(rid);
   }
 }

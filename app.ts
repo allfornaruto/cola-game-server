@@ -1,9 +1,10 @@
 import { pinus, RESERVED, RouteRecord, FrontendOrBackendSession, HandlerCallback } from "pinus";
 import { preload } from "./preload";
 import * as routeUtil from "./app/util/routeUtil";
-import Updater from "./app/domain/Updater";
+import { getUpdateInstance } from "./app/domain/Updater";
 import _pinus = require("pinus");
 
+const updateInstance = getUpdateInstance();
 const filePath = (_pinus as any).FILEPATH;
 filePath.MASTER = "/config/master";
 filePath.SERVER = "/config/servers";
@@ -50,7 +51,7 @@ let app = pinus.createApp();
 app.set("name", "pinus-talk-room");
 
 app.configure("production|development", "game", function () {
-  Updater.init();
+  updateInstance.init();
 });
 
 app.configure("production|development", "connector", function () {
@@ -77,7 +78,7 @@ app.configure("production|development", function () {
   });
 
   // route configures
-  app.route("chat", routeUtil.chat);
+  app.route("game", routeUtil.game);
 
   // filter configures
   app.filter(new pinus.filters.timeout());

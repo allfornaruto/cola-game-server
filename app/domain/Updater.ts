@@ -5,17 +5,17 @@ import { Cola } from "../../types/Cola";
 
 type RoomId = string;
 
-export default class Updater {
+class Updater {
   // 分割房间
-  private static rooms: Map<RoomId, Room> = new Map<string, Room>();
+  private rooms: Map<RoomId, Room> = new Map<string, Room>();
   // 上次更新时间（用来控制update更新）
-  private static lateUpdate: number = 0;
+  private lateUpdate: number = 0;
 
   /**
    * 通过rid找到目标房间
    * @param rid 房间ID
    */
-  public static findRoom(rid: string): Room {
+  public findRoom(rid: string): Room {
     return this.rooms.get(rid);
   }
 
@@ -24,7 +24,7 @@ export default class Updater {
    * @param {string} rid 房间ID
    * @param {Room} room Room实例
    */
-  public static addRoom(rid: string, room: Room) {
+  public addRoom(rid: string, room: Room) {
     this.rooms.set(rid, room);
   }
 
@@ -32,8 +32,9 @@ export default class Updater {
    * 移除房间
    * @param {string} rid 房间ID
    */
-  public static removeRoom(rid: string) {
-    this.rooms.delete(rid);
+  public removeRoom(rid: string) {
+    const delRes = this.rooms.delete(rid);
+    if (!delRes) console.warn(`移除房间失败，也许该房间在别的服务器上?`);
   }
 
   /**
@@ -41,7 +42,7 @@ export default class Updater {
    * @param {RoomId} rid
    * @param command
    */
-  public static addCommand(rid: RoomId, command: Command) {
+  public addCommand(rid: RoomId, command: Command) {
     let room: Room = this.rooms.get(rid);
     room.commands.push(command);
 
@@ -53,14 +54,14 @@ export default class Updater {
    * @param {RoomId} rid
    * @returns {Command[][]}
    */
-  public static getHistoryCommands(rid: RoomId) {
+  public getHistoryCommands(rid: RoomId) {
     return this.rooms.get(rid).historyCommands;
   }
 
   /**
    * 初始化
    */
-  public static init() {
+  public init() {
     this.lateUpdate = Date.now();
     setInterval(() => {
       let now: number = Date.now();
@@ -71,7 +72,7 @@ export default class Updater {
     }, 0);
   }
 
-  private static update(dt: number) {
+  private update(dt: number) {
     if (this.rooms.size <= 0) return;
     // 遍历房间来更新帧
     this.rooms.forEach((room: Room) => {
@@ -90,7 +91,7 @@ export default class Updater {
    * 更新一帧
    * @param {Room} room
    */
-  private static stepUpdate(room: Room) {
+  private stepUpdate(room: Room) {
     let commands: Command[] = room.commands;
     // 记录到历史指令（用于重连）
     room.historyCommands.push(commands);
@@ -102,9 +103,15 @@ export default class Updater {
       isReplay: false,
     };
 
-    console.log(`发帧: ${JSON.stringify(data)}`);
-
     // 发帧
     room.channel.pushMessage("onRecvFrame", data);
   }
 }
+
+let updateInstance;
+export const getUpdateInstance = (): Updater => {
+  if (!updateInstance) {
+    updateInstance = new Updater();
+  }
+  return updateInstance;
+};
