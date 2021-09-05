@@ -161,6 +161,17 @@ export class GameHandler {
 
     let { rid } = msg;
 
+    // 从Updater中找到目标room
+    const room = updateInstance.findRoom(rid);
+    if (room.isForbidJoin) {
+      console.warn(`uid = ${session.uid}, rid = ${rid}, room.isForbidJoin = true`);
+      return {
+        code: 500,
+        message: `房主拒绝用户进入房间`,
+        data: null,
+      };
+    }
+
     // 先查询用户是否已经在目标房间内
     const userRid = session.get("room");
     if (!!userRid) {
@@ -198,8 +209,6 @@ export class GameHandler {
     const channel = this.channelService.getChannel(rid);
     channel.add(playerInfo.uid, serverId);
 
-    // 从Updater中找到目标room，并加入用户
-    const room = updateInstance.findRoom(rid);
     room.addPlayer(player);
 
     // 将room信息保存在用户的session中

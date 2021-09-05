@@ -8,7 +8,10 @@ npm run start
 npm run test
 ```
 
-## 客户端 JS-SDK 文档
+## 客户端文档
+
+- test/client
+- types/Cola.ts
 
 ### 初始化并与服务器建立 WebSocket 连接
 
@@ -589,7 +592,3 @@ interface Status {
   status: boolean;
 }
 ```
-
-## 服务端文档
-
-> TODO

@@ -1,7 +1,17 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<testsuites name="jest tests" tests="1" failures="0" time="15.771">
-  <testsuite name="undefined" errors="0" failures="0" skipped="0" timestamp="2021-09-03T15:33:22" time="15.524" tests="1">
-    <testcase classname=" 用户A创建房间room-1977，用户B进入该房间，用户A开启帧同步并发送帧消息(进度0, 10, 20, ...100)，用户B监听帧消息" name=" 用户A创建房间room-1977，用户B进入该房间，用户A开启帧同步并发送帧消息(进度0, 10, 20, ...100)，用户B监听帧消息" time="11.323">
+<testsuites name="jest tests" tests="6" failures="0" time="24.181">
+  <testsuite name="undefined" errors="0" failures="0" skipped="0" timestamp="2021-09-05T14:27:12" time="23.933" tests="6">
+    <testcase classname=" 用户A创建房间room-1977，用户B在大厅监听该房间的创建" name=" 用户A创建房间room-1977，用户B在大厅监听该房间的创建" time="5.157">
+    </testcase>
+    <testcase classname=" 用户A创建房间room-1977，用户B进入该房间，用户A监听用户B进入/离开房间的事件" name=" 用户A创建房间room-1977，用户B进入该房间，用户A监听用户B进入/离开房间的事件" time="1.115">
+    </testcase>
+    <testcase classname=" 用户A创建房间room-1977，用户B进入该房间，用户A发送消息，用户B监听消息" name=" 用户A创建房间room-1977，用户B进入该房间，用户A发送消息，用户B监听消息" time="1.106">
+    </testcase>
+    <testcase classname=" 用户A创建房间room-1977，用户B进入该房间，房主（用户A）修改房间信息，用户B监听房间修改消息，用户B尝试修改房间信息，由于用户B不是房主，所以修改信息失败" name=" 用户A创建房间room-1977，用户B进入该房间，房主（用户A）修改房间信息，用户B监听房间修改消息，用户B尝试修改房间信息，由于用户B不是房主，所以修改信息失败" time="0.073">
+    </testcase>
+    <testcase classname=" 用户A创建公共房间room-1977，并禁止其他用户进入房间，用户B尝试进入该房间，无法进入" name=" 用户A创建公共房间room-1977，并禁止其他用户进入房间，用户B尝试进入该房间，无法进入" time="1.096">
+    </testcase>
+    <testcase classname=" 用户A创建房间room-1977，用户B进入该房间，用户A开启帧同步并发送帧消息(进度0, 10, 20, ...100)，用户B监听帧消息" name=" 用户A创建房间room-1977，用户B进入该房间，用户A开启帧同步并发送帧消息(进度0, 10, 20, ...100)，用户B监听帧消息" time="11.184">
     </testcase>
   </testsuite>
 </testsuites>
