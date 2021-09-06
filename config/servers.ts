@@ -42,7 +42,7 @@ module.exports = {
     gate: [
       {
         id: "gate-server-1",
-        host: "www.allfornaruto.cn",
+        host: "127.0.0.1",
         clientPort: 3100,
         frontend: true,
         args: " --inspect=10001",
