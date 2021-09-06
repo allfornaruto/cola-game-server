@@ -82,6 +82,11 @@ app.configure("production|development", "gate", function () {
   app.set("connectorConfig", {
     connector: pinus.connectors.hybridconnector,
     useProtobuf: true,
+    ssl: {
+      type: "wss",
+      key: fs.readFileSync("./key/www.allfornaruto.cn.key"),
+      cert: fs.readFileSync("./key/www.allfornaruto.cn.pem"),
+    },
   });
 });
 

@@ -42,7 +42,7 @@ module.exports = {
     gate: [
       {
         id: "gate-server-1",
-        host: "43.130.44.68",
+        host: "www.allfornaruto.cn",
         clientPort: 3100,
         frontend: true,
         args: " --inspect=10001",
@@ -51,18 +51,18 @@ module.exports = {
     connector: [
       {
         id: "connector-server-1",
-        host: "43.130.44.68",
+        host: "127.0.0.1",
         port: 4200,
-        clientHost: "127.0.0.1",
+        clientHost: "www.allfornaruto.cn",
         clientPort: 3200,
         frontend: true,
         args: " --inspect=10010",
       },
       {
         id: "connector-server-2",
-        host: "43.130.44.68",
+        host: "127.0.0.1",
         port: 4201,
-        clientHost: "127.0.0.1",
+        clientHost: "www.allfornaruto.cn",
         clientPort: 3201,
         frontend: true,
         args: " --inspect=10011",
