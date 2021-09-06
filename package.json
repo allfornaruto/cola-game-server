@@ -1,7 +1,7 @@
 {
   "name": "cola-game-server",
   "description": "A gameServer based on NodeJS Pinus Framework",
-  "version": "1.0.1",
+  "version": "1.0.2",
   "private": false,
   "repository": {
     "type": "git",
@@ -13,8 +13,7 @@
   "main": "./dist/app",
   "scripts": {
     "start": "node ./dist/app.js",
-    "prod": "pinus start --directory dist --env production",
-    "build": "node_modules/.bin/tsc",
+    "build": "node_modules/.bin/tsc && node copy.js",
     "test": "jest --detectOpenHandles --coverage --runInBand --forceExit --reporters=default --reporters=jest-junit"
   },
   "jest-junit": {
@@ -25,7 +24,7 @@
     "@types/node": "8.10.54",
     "bluebird": "^3.5.1",
     "bufferutil": "^4.0.1",
-    "pinus": "1.4.2",
+    "pinus": "1.4.14",
     "reflect-metadata": "^0.1.10",
     "source-map-support": "^0.5.0",
     "utf-8-validate": "^5.0.2",
@@ -33,10 +32,11 @@
   },
   "devDependencies": {
     "@types/jest": "^25.2.1",
+    "cpy": "^8.1.2",
     "jest": "^25.2.4",
     "jest-junit": "^10.0.0",
     "ts-jest": "^25.3.0",
     "tslint": "5.20.1",
-    "typescript": "^3.9.0-beta"
+    "typescript": "^4.3.5"
   }
 }

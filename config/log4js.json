@@ -1,4 +1,4 @@
-module.exports = {
+{
   "appenders": {
     "console": {
       "type": "console"
@@ -88,58 +88,39 @@ module.exports = {
   },
   "categories": {
     "default": {
-      "appenders": [
-        "console",
-        "pinus"
-      ],
+      "appenders": ["console", "pinus"],
       "level": "info"
     },
     "con-log": {
-      "appenders": [
-        "con-log"
-      ],
+      "appenders": ["con-log"],
       "level": "info"
     },
     "rpc-log": {
-      "appenders": [
-        "rpc-log"
-      ],
+      "appenders": ["rpc-log"],
       "level": "info"
     },
     "forward-log": {
-      "appenders": [
-        "forward-log"
-      ],
+      "appenders": ["forward-log"],
       "level": "info"
     },
     "rpc-debug": {
-      "appenders": [
-        "rpc-debug"
-      ],
+      "appenders": ["rpc-debug"],
       "level": "info"
     },
     "crash-log": {
-      "appenders": [
-        "crash-log"
-      ],
+      "appenders": ["crash-log"],
       "level": "info"
     },
     "admin-log": {
-      "appenders": [
-        "admin-log"
-      ],
+      "appenders": ["admin-log"],
       "level": "info"
     },
     "pinus-admin": {
-      "appenders": [
-        "pinus-admin"
-      ],
+      "appenders": ["pinus-admin"],
       "level": "info"
     },
     "pinus-rpc": {
-      "appenders": [
-        "pinus-rpc"
-      ],
+      "appenders": ["pinus-rpc"],
       "level": "info"
     }
   },

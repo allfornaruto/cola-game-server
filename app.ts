@@ -2,25 +2,9 @@ import { pinus, RESERVED, RouteRecord, FrontendOrBackendSession, HandlerCallback
 import { preload } from "./preload";
 import * as routeUtil from "./app/util/routeUtil";
 import { getUpdateInstance } from "./app/domain/Updater";
-import _pinus = require("pinus");
 import * as fs from "fs";
 
 const updateInstance = getUpdateInstance();
-const filePath = (_pinus as any).FILEPATH;
-filePath.MASTER = "/config/master";
-filePath.SERVER = "/config/servers";
-filePath.CRON = "/config/crons";
-filePath.LOG = "/config/log4js";
-filePath.SERVER_PROTOS = "/config/serverProtos";
-filePath.CLIENT_PROTOS = "/config/clientProtos";
-filePath.MASTER_HA = "/config/masterha";
-filePath.LIFECYCLE = "/lifecycle";
-filePath.SERVER_DIR = "/app/servers/";
-filePath.CONFIG_DIR = "/config";
-
-const adminfilePath = _pinus.DEFAULT_ADMIN_PATH;
-adminfilePath.ADMIN_FILENAME = "adminUser";
-adminfilePath.ADMIN_USER = "config/adminUser";
 /**
  *  替换全局Promise
  *  自动解析sourcemap
@@ -87,14 +71,15 @@ app.configure("production|development", function () {
   app.set(RESERVED.ERROR_HANDLER, errorHandler);
   app.set(RESERVED.GLOBAL_ERROR_HANDLER, globalErrorHandler);
   app.globalAfter((err: Error, routeRecord: RouteRecord, msg: any, session: FrontendOrBackendSession, resp: any, cb: HandlerCallback) => {
-    // console.log('global after ', err, routeRecord, msg);
+    console.log("global after ", err, routeRecord, msg);
   });
 
   // route configures
   app.route("game", routeUtil.game);
-
-  // filter configures
-  app.filter(new pinus.filters.timeout());
 });
 
 app.start();
+
+process.on("uncaughtException", function (err) {
+  console.error(" Caught exception: " + err.stack);
+});
