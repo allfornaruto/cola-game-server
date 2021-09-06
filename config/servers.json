@@ -51,7 +51,7 @@
     "connector": [
       {
         "id": "connector-server-1",
-        "host": "127.0.0.1",
+        "host": "www.allfornaruto.cn",
         "port": 4200,
         "clientHost": "www.allfornaruto.cn",
         "clientPort": 3200,
@@ -60,7 +60,7 @@
       },
       {
         "id": "connector-server-2",
-        "host": "127.0.0.1",
+        "host": "www.allfornaruto.cn",
         "port": 4201,
         "clientHost": "www.allfornaruto.cn",
         "clientPort": 3201,
