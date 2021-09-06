@@ -3,6 +3,7 @@ import { preload } from "./preload";
 import * as routeUtil from "./app/util/routeUtil";
 import { getUpdateInstance } from "./app/domain/Updater";
 import _pinus = require("pinus");
+import * as fs from "fs";
 
 const updateInstance = getUpdateInstance();
 const filePath = (_pinus as any).FILEPATH;
@@ -54,12 +55,26 @@ app.configure("production|development", "game", function () {
   updateInstance.init();
 });
 
-app.configure("production|development", "connector", function () {
+app.configure("development", "connector", function () {
   app.set("connectorConfig", {
     connector: pinus.connectors.hybridconnector,
     heartbeat: 3,
     useDict: true,
     useProtobuf: true,
+  });
+});
+
+app.configure("production", "connector", function () {
+  app.set("connectorConfig", {
+    connector: pinus.connectors.hybridconnector,
+    heartbeat: 3,
+    useDict: true,
+    useProtobuf: true,
+    ssl: {
+      type: "wss",
+      key: fs.readFileSync("./key/www.allfornaruto.cn.key"),
+      cert: fs.readFileSync("./key/www.allfornaruto.cn.pem"),
+    },
   });
 });
 
