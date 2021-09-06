@@ -43,6 +43,7 @@
       {
         "id": "gate-server-1",
         "host": "127.0.0.1",
+        "clientHost": "www.allfornaruto.cn",
         "clientPort": 3100,
         "frontend": true,
         "args": " --inspect=10001"
