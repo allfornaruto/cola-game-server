@@ -8,7 +8,7 @@ npm install
 npm run start
 # 以pinus命令行方式运行
 pinus start --directory dist --env development
-pinus start --directory dist --env production
+pinus start --directory dist --env production --daemon
 # 测试
 npm run test
 ```
