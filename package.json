@@ -1,7 +1,7 @@
 {
   "name": "cola-game-server",
   "description": "A gameServer based on NodeJS Pinus Framework",
-  "version": "1.0.2",
+  "version": "1.0.3",
   "private": false,
   "repository": {
     "type": "git",

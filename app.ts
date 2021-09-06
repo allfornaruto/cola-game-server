@@ -39,7 +39,7 @@ app.configure("production|development", "game", function () {
   updateInstance.init();
 });
 
-app.configure("development|production", "connector", function () {
+app.configure("development|production", "gate", function () {
   app.set("connectorConfig", {
     connector: pinus.connectors.hybridconnector,
     heartbeat: 3,
@@ -53,7 +53,7 @@ app.configure("development|production", "connector", function () {
   });
 });
 
-app.configure("production|development", "gate", function () {
+app.configure("development|production", "connector", function () {
   app.set("connectorConfig", {
     connector: pinus.connectors.hybridconnector,
     heartbeat: 3,
