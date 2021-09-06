@@ -12,7 +12,7 @@
   },
   "main": "./dist/app",
   "scripts": {
-    "start": "pinus start --directory dist --env development",
+    "start": "node ./dist/app.js",
     "prod": "pinus start --directory dist --env production",
     "build": "node_modules/.bin/tsc",
     "test": "jest --detectOpenHandles --coverage --runInBand --forceExit --reporters=default --reporters=jest-junit"
