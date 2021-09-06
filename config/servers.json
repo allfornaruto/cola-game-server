@@ -42,7 +42,7 @@
     "gate": [
       {
         "id": "gate-server-1",
-        "host": "0.0.0.0",
+        "host": "127.0.0.1",
         "clientPort": 3100,
         "frontend": true,
         "args": " --inspect=10001"
@@ -51,7 +51,7 @@
     "connector": [
       {
         "id": "connector-server-1",
-        "host": "www.allfornaruto.cn",
+        "host": "127.0.0.1",
         "port": 4200,
         "clientHost": "www.allfornaruto.cn",
         "clientPort": 3200,
@@ -60,7 +60,7 @@
       },
       {
         "id": "connector-server-2",
-        "host": "www.allfornaruto.cn",
+        "host": "127.0.0.1",
         "port": 4201,
         "clientHost": "www.allfornaruto.cn",
         "clientPort": 3201,
