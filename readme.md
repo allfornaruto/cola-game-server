@@ -162,6 +162,17 @@ const roomInfo: Cola.Room = await cola.enterRoom({
 });
 ```
 
+### 根据房间 ID 获取房间信息
+
+> getRoomByRoomId(params: Cola.Request.GetRoomByRoomId): Promise<Cola.Room>
+
+- params `{Cola.Request.GetRoomByRoomId}` 请求参数
+  - rid `{string}` 房间 ID
+
+```typescript
+const roomInfo = await cola.getRoomByRoomId({ rid: "123" });
+```
+
 ### 房主修改房间信息
 
 - 修改成功后，房间内全部成员都会收到一条修改房间广播 onChangeRoom，Room 实例将更新。

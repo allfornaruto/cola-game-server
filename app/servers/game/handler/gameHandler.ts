@@ -232,6 +232,32 @@ export class GameHandler {
   }
 
   /**
+   * 根据房间ID获取房间信息
+   * @param {Cola.Request.GetRoomByRoomId} msg 进入房间请求参数
+   * @param {Object} session
+   */
+  async getRoomByRoomId(msg: Cola.Request.GetRoomByRoomId, session: BackendSession): Promise<Cola.Response.GetRoomByRoomId> {
+    const { rid } = msg;
+
+    // 从Updater中找到目标room
+    const room = updateInstance.findRoom(rid);
+
+    if (!room) {
+      return {
+        code: 500,
+        message: "找不到目标房间",
+        data: null,
+      };
+    }
+
+    return {
+      code: 200,
+      message: "",
+      data: room.getRoomInfo(),
+    };
+  }
+
+  /**
    * 房主修改房间信息
    * @description 修改成功后，房间内全部成员都会收到一条修改房间广播 onChangeRoom，Room实例将更新。
    * @description 只有房主有权限修改房间

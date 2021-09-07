@@ -101,6 +101,23 @@ export default class ColaClient {
   }
 
   /**
+   * 根据房间ID获取房间信息
+   * @param {Cola.Request.GetRoomByRoomId} params
+   */
+  public getRoomByRoomId(params: Cola.Request.GetRoomByRoomId): Promise<Cola.Room> {
+    return new Promise((resolve, reject) => {
+      const requestData: Cola.Request.GetRoomByRoomId = params;
+      this.client.request("game.gameHandler.getRoomByRoomId", requestData, (res: Cola.Response.GetRoomByRoomId) => {
+        if (res.code === 200) {
+          resolve(res.data);
+        } else {
+          reject(res);
+        }
+      });
+    });
+  }
+
+  /**
    * 房主修改房间信息
    * @description 修改成功后，房间内全部成员都会收到一条修改房间广播 onChangeRoom，Room实例将更新。
    * @description 只有房主有权限修改房间

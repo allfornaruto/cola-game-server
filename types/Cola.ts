@@ -51,6 +51,14 @@ export namespace Cola {
     }
 
     /**
+     * @name 根据房间ID获取房间
+     * @field {string} rid  房间Id
+     */
+    export interface GetRoomByRoomId {
+      rid: string;
+    }
+
+    /**
      * @name 修改玩家状态参数
      * @field {number} customPlayerStatus  自定义玩家状态
      */
@@ -114,6 +122,11 @@ export namespace Cola {
       data: Room;
     }
     export interface ChangeRoom {
+      code: number;
+      message: string;
+      data: Room;
+    }
+    export interface GetRoomByRoomId {
       code: number;
       message: string;
       data: Room;
