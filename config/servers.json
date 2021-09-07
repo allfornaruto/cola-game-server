@@ -1,5 +1,5 @@
 {
-  "development2": {
+  "test": {
     "gate": [
       {
         "id": "gate-server-1",

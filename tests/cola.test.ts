@@ -328,6 +328,63 @@ test("用户A创建公共房间room-1977，并禁止其他用户进入房间，�
   });
 });
 
+test("用户A创建房间room-1977，用户B进入该房间，用户A开启帧同步, 用户A与用户B监听房间帧同步开启事件，随后用户A停止帧同步，用户A与用户B监听房间帧同步停止事件", async done => {
+  let rid = "";
+  let flag_1 = false;
+  let flag_2 = false;
+  // 用户A监听用户B进入房间事件
+  colaA.listen("onRoomAdd", async (event: Cola.EventRes.OnRoomAdd) => {
+    console.log(">>>>>>>>>>>>>>>colaA ColaEvent[onRoomAdd]", JSON.stringify(event));
+    expect(event.uid).toBe(playerInfoB.uid);
+    expect(event.gameId).toBe(playerInfoB.gameId);
+    expect(event.name).toBe(playerInfoB.name);
+    expect(event.teamId).toStrictEqual(playerInfoExtraB.teamId);
+    expect(event.customPlayerStatus).toBe(playerInfoExtraB.customPlayerStatus);
+    expect(event.customProfile).toBe(playerInfoExtraB.customProfile);
+    expect(event.matchAttributes).toStrictEqual(playerInfoExtraB.matchAttributes);
+    // 用户A开启帧同步
+    const res = await colaA.startFrameSync();
+    expect(res.status).toBe(true);
+  });
+  // 用户B监听用户A创建房间事件
+  colaB.listen("onRoomCreate", async (event: Cola.EventRes.OnRoomCreate) => {
+    console.log(">>>>>>>>>>>>>>>colaB ColaEvent[onRoomCreate]", JSON.stringify(event));
+    rid = event.rid;
+    const roomInfo = await colaB.enterRoom({ rid, playerInfoExtra: playerInfoExtraB });
+    console.log(`roomInfo = ${JSON.stringify(roomInfo)}`);
+    expect(roomInfo.playerList.length).toBe(2);
+    expect(roomInfo.playerList[0]).toMatchObject(playerInfoA);
+    expect(roomInfo.playerList[1]).toMatchObject(playerInfoB);
+  });
+  // 用户A监听房间帧同步开启，随后停止帧同步
+  colaA.listen("onStartFrameSync", async (event: Cola.EventRes.onStartFrameSync) => {
+    expect(event).toBe("startFrame");
+    const stopFrameRes = await colaA.stopFrameSync();
+    expect(stopFrameRes.status).toBeTruthy();
+  });
+  // 用户B监听房间帧同步开启
+  colaB.listen("onStartFrameSync", async (event: Cola.EventRes.onStartFrameSync) => {
+    expect(event).toBe("startFrame");
+  });
+  // 用户A监听房间帧同步停止
+  colaA.listen("onStopFrameSync", async (event: Cola.EventRes.onStopFrameSync) => {
+    expect(event).toBe("stopFrame");
+    flag_1 = true;
+    if (flag_1 && flag_2) done();
+  });
+  // 用户B监听房间帧同步停止
+  colaB.listen("onStopFrameSync", async (event: Cola.EventRes.onStopFrameSync) => {
+    expect(event).toBe("stopFrame");
+    flag_2 = true;
+    if (flag_1 && flag_2) done();
+  });
+
+  // 用户A、B进入游戏大厅，用户A创建房间
+  await colaA.enterHall();
+  await colaB.enterHall();
+  await colaA.createRoom(myRoomA);
+});
+
 test("用户A创建房间room-1977，用户B进入该房间，用户A开启帧同步并发送帧消息(进度0, 10, 20, ...100)，用户B监听帧消息", async done => {
   let rid = "";
   // 用户A监听用户B进入房间事件

@@ -185,7 +185,7 @@ export default class ColaClient {
   public stopFrameSync(): Promise<Cola.Status> {
     return new Promise((resolve, reject) => {
       const requestData: Cola.Request.StopFrameSync = {};
-      this.client.request("game.gameHandler.startFrameSync", requestData, (res: Cola.Response.StopFrameSync) => {
+      this.client.request("game.gameHandler.stopFrameSync", requestData, (res: Cola.Response.StopFrameSync) => {
         if (res.code === 200) {
           resolve(res.data);
         } else {

@@ -4,13 +4,16 @@
 
 ```shell
 npm install
-# 运行
-npm run start
-# 以pinus命令行方式运行
+# 运行并测试
+pinus start --directory dist --env test
+npm run test
+
+# 运行不同的环境
 pinus start --directory dist --env development
 pinus start --directory dist --env production --daemon
-# 测试
-npm run test
+
+# 查看端口占用状态
+netstat -ano|findstr [port]
 ```
 
 ## 客户端文档
@@ -272,7 +275,9 @@ type Event =
   | "onChangeRoom"
   | "onChangeCustomPlayerStatus"
   | "onChat"
-  | "onRecvFrame";
+  | "onRecvFrame"
+  | "onStartFrameSync"
+  | "onStopFrameSync";
 ```
 
 #### EventRes.OnKick
@@ -361,6 +366,22 @@ interface Frame {
   isReplay: boolean;
 }
 interface onRecvFrame extends Frame {}
+```
+
+#### EventRes.onStartFrameSync
+
+> 房间开始帧同步事件
+
+```typescript
+type onStartFrameSync = "startFrame";
+```
+
+#### EventRes.onStartFrameSync
+
+> 房间停止帧同步事件
+
+```typescript
+type onStopFrameSync = "stopFrame";
 ```
 
 ### Params

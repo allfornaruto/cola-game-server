@@ -35,7 +35,7 @@ error stack: ${err.stack}`);
 let app = pinus.createApp();
 app.set("name", "pinus-talk-room");
 
-app.configure("production|development", "game", function () {
+app.configure("production|development|test", "game", function () {
   updateInstance.init();
 });
 
@@ -53,6 +53,15 @@ app.configure("development|production", "gate", function () {
   });
 });
 
+app.configure("test", "gate", function () {
+  app.set("connectorConfig", {
+    connector: pinus.connectors.hybridconnector,
+    heartbeat: 3,
+    useDict: true,
+    useProtobuf: true,
+  });
+});
+
 app.configure("development|production", "connector", function () {
   app.set("connectorConfig", {
     connector: pinus.connectors.hybridconnector,
@@ -67,7 +76,16 @@ app.configure("development|production", "connector", function () {
   });
 });
 
-app.configure("production|development", function () {
+app.configure("test", "connector", function () {
+  app.set("connectorConfig", {
+    connector: pinus.connectors.hybridconnector,
+    heartbeat: 3,
+    useDict: true,
+    useProtobuf: true,
+  });
+});
+
+app.configure("production|development|test", function () {
   app.set(RESERVED.ERROR_HANDLER, errorHandler);
   app.set(RESERVED.GLOBAL_ERROR_HANDLER, globalErrorHandler);
   app.globalAfter((err: Error, routeRecord: RouteRecord, msg: any, session: FrontendOrBackendSession, resp: any, cb: HandlerCallback) => {

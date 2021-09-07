@@ -348,6 +348,11 @@ export class GameHandler {
     // 开始帧同步
     room.startFrameSync();
 
+    // 向该房间内所有成员广播房间信息变化事件
+    const channelService = this.app.get("channelService");
+    const channel = channelService.getChannel(rid);
+    channel.pushMessage("onStartFrameSync", "startFrame");
+
     return {
       code: 200,
       message: "",
@@ -371,6 +376,11 @@ export class GameHandler {
 
     // 停止帧同步
     room.stopFrameSync();
+
+    // 向该房间内所有成员广播房间信息变化事件
+    const channelService = this.app.get("channelService");
+    const channel = channelService.getChannel(rid);
+    channel.pushMessage("onStopFrameSync", "stopFrame");
 
     return {
       code: 200,

@@ -156,7 +156,9 @@ export namespace Cola {
     | "onChangeRoom"
     | "onChangeCustomPlayerStatus"
     | "onChat"
-    | "onRecvFrame";
+    | "onRecvFrame"
+    | "onStartFrameSync"
+    | "onStopFrameSync";
 
   export namespace EventRes {
     export interface OnRoomCreate extends Room {}
@@ -203,6 +205,14 @@ export namespace Cola {
      *
      */
     export interface onRecvFrame extends Frame {}
+    /**
+     * @name 房间开始帧同步事件
+     */
+    export type onStartFrameSync = "startFrame";
+    /**
+     * @name 房间停止帧同步事件
+     */
+    export type onStopFrameSync = "stopFrame";
   }
   export namespace Params {
     /**
