@@ -9,7 +9,7 @@ export namespace Cola {
      * @field {string} type  房间类型
      * @field {CreateRoomType} createType  创建房间方式
      * @field {number} maxPlayers  房间最大玩家数量
-     * @field {boolean} isPrivate  是否私有
+     * @field {boolean} isPrivate  是否私有，私有房间无法被匹配到，只可通过 rid 进入
      * @field {string} customProperties  房间自定义属性
      * @field {TeamInfo[]} teamList  团队属性
      * @field {PlayerInfoExtra} playerInfoExtra 加入房间用户额外信息参数
@@ -38,7 +38,7 @@ export namespace Cola {
      * @name 房间变更参数
      * @field {string} name  房间名称（可选）
      * @field {string} owner  房主ID（可选）
-     * @field {boolean} isPrivate  是否私有（可选）
+     * @field {boolean} isPrivate  是否私有（可选），私有房间无法被匹配到，只可通过 rid 进入
      * @field {string} customProperties  自定义房间属性（可选）
      * @field {boolean} isForbidJoin  是否禁止加入房间（可选）
      */
@@ -262,7 +262,7 @@ export namespace Cola {
      * @name 房主修改房间信息
      * @field {string} name  房间名称（可选）
      * @field {string} owner  房主ID（可选）
-     * @field {boolean} isPrivate  是否私有（可选）
+     * @field {boolean} isPrivate  是否私有（可选），私有房间无法被匹配到，只可通过 rid 进入
      * @field {string} customProperties  自定义房间属性（可选）
      * @field {boolean} isForbidJoin  是否禁止加入房间（可选）
      */
@@ -374,7 +374,7 @@ export namespace Cola {
    * @field {CreateRoomType} createType  创建房间方式
    * @field {number} maxPlayers  房间最大玩家数量
    * @field {string} owner 房主Id
-   * @field {boolean} isPrivate  是否私有
+   * @field {boolean} isPrivate  是否私有，私有房间无法被匹配到，只可通过 rid 进入
    * @field {string} customProperties  房间自定义属性
    * @field {PlayerInfo[]} playerList 玩家列表
    * @field {TeamInfo[]} teamList  团队属性

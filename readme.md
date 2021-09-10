@@ -106,7 +106,7 @@ await cola.enterHall();
     - 0 `{number}` 普通创建
     - 1 `{number}` 匹配创建
   - maxPlayers `{number}` 房间最大玩家数量
-  - isPrivate `{boolean}` 是否私有
+  - isPrivate `{boolean}` 是否私有，私有房间无法被匹配到，只可通过 rid 进入
   - customProperties `{string}` 房间自定义属性
   - teamList `{TeamInfo[]}` 团队属性
     - id: `{string}` 队伍 ID
@@ -183,7 +183,7 @@ const roomInfo = await cola.getRoomByRoomId({ rid: "123" });
 - params `{Cola.Params.ChangeRoom}` 修改房间信息参数
   - name `{string}` 房间名称（可选）
   - owner `{string}` 房主 ID（可选）
-  - isPrivate `{boolean}` 是否私有（可选）
+  - isPrivate `{boolean}` 是否私有（可选），私有房间无法被匹配到，只可通过 rid 进入
   - customProperties `{string}` 自定义房间属性（可选）
   - isForbidJoin `{boolean}` 是否禁止加入房间（可选）
 
@@ -411,7 +411,7 @@ interface CreateRoom {
   createType: CreateRoomType;
   // 房间最大玩家数量
   maxPlayers: number;
-  // 是否私有
+  // 是否私有，私有房间无法被匹配到，只可通过 rid 进入
   isPrivate: boolean;
   // 房间自定义属性
   customProperties: string;
@@ -445,7 +445,7 @@ interface ChangeRoom {
   name?: string;
   // 房主ID（可选）
   owner?: string;
-  // 是否私有（可选）
+  // 是否私有（可选），私有房间无法被匹配到，只可通过 rid 进入
   isPrivate?: boolean;
   // 自定义房间属性（可选）
   customProperties?: string;
@@ -572,7 +572,7 @@ interface Room {
   maxPlayers: number;
   // 房主Id
   owner: string;
-  // 是否私有
+  // 是否私有，私有房间无法被匹配到，只可通过 rid 进入
   isPrivate: boolean;
   // 房间自定义属性
   customProperties: string;
