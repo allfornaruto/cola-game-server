@@ -13,22 +13,24 @@ const updateInstance = getUpdateInstance();
 preload();
 
 function errorHandler(err: Error, msg: any, resp: any, session: FrontendOrBackendSession, cb: HandlerCallback) {
-  console.error(`${pinus.app.serverId} error handler msg[${JSON.stringify(msg)}] ,resp[${JSON.stringify(resp)}] ,
-to resolve unknown exception: sessionId:${JSON.stringify(session.export())} ,
-error stack: ${err.stack}`);
+  const errMsg = `${pinus.app.serverId} error handler msg[${JSON.stringify(msg)}] ,resp[${JSON.stringify(resp)}] ,
+  to resolve unknown exception: sessionId:${JSON.stringify(session.export())} ,
+  error stack: ${err.stack}`;
+  console.error(errMsg);
   if (!resp) {
-    resp = { code: 1003 };
+    resp = { code: 1003, message: errMsg };
   }
   cb(err, resp);
 }
 
 function globalErrorHandler(err: Error, msg: any, resp: any, session: FrontendOrBackendSession, cb: HandlerCallback) {
-  console.error(`${pinus.app.serverId} globalErrorHandler msg[${JSON.stringify(msg)}] ,resp[${JSON.stringify(resp)}] ,
-to resolve unknown exception: sessionId:${JSON.stringify(session.export())} ,
-error stack: ${err.stack}`);
+  const errMsg = `${pinus.app.serverId} globalErrorHandler msg[${JSON.stringify(msg)}] ,resp[${JSON.stringify(resp)}] ,
+  to resolve unknown exception: sessionId:${JSON.stringify(session.export())} ,
+  error stack: ${err.stack}`;
+  console.error(errMsg);
 
   if (cb) {
-    cb(err, resp ? resp : { code: 503 });
+    cb(err, resp ? resp : { code: 503, message: errMsg });
   }
 }
 
