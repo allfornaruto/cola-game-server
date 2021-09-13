@@ -29,8 +29,31 @@ export default class ColaClient {
    */
   public listen(event: Cola.Event, cb: (e: any) => void) {
     this.client.on(event, data => {
-      cb(data);
+      try {
+        cb(data);
+      } catch (e) {
+        console.error(e);
+      }
     });
+  }
+
+  /**
+   * 取消Cola事件监听处理
+   * @param event 事件名称
+   * @param cb 取消回调
+   */
+  public listenOff(event: Cola.Event, cb: Function) {
+    try {
+      this.client.off(event, () => {
+        try {
+          cb();
+        } catch (e) {
+          console.error(e);
+        }
+      });
+    } catch (e) {
+      console.error(e);
+    }
   }
 
   /**

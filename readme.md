@@ -87,6 +87,14 @@ cola.listen("onChat", async (event: Cola.EventRes.OnChat) => console.log(event))
 cola.listen("onChangeRoom", async (event: Cola.EventRes.OnChangeRoom) => console.log(event));
 // 监听玩家自定义状态变化
 cola.listen("onChangeCustomPlayerStatus", async (event: Cola.EventRes.OnChangeCustomPlayerStatus) => console.log(event));
+// 房间帧消息广播事件
+cola.listen("onRecvFrame", async (event: Cola.EventRes.onRecvFrame) => console.log(event));
+// 房间开始帧同步事件
+cola.listen("onStartFrameSync", async (event: Cola.EventRes.onStartFrameSync) => console.log(event));
+// 房间停止帧同步事件
+cola.listen("onStopFrameSync", async (event: Cola.EventRes.onStopFrameSync) => console.log(event));
+// 取消监听某事件
+cola.listenOff("", async (event: any) => console.log(event));
 ```
 
 ### 玩家进入游戏大厅
