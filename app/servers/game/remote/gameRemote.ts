@@ -136,8 +136,43 @@ export class GameRemote {
   /**
    * 移除房间
    * @param rid 房间id
+   * @param cb 移除房间回调函数
    */
-  public destroyRoom(rid: string) {
+  public destroyRoom(rid: string, cb?: Function) {
     updateInstance.removeRoom(rid);
+    if (cb) cb();
+  }
+
+  /**
+   * 解散房间
+   * 房间内全部成员都会收到一条解散房间广播 onDismissRoom
+   * @param rid 房间id
+   */
+  public dismissRoom(rid: string) {
+    try {
+      const channelService = this.app.get("channelService");
+      const channel = channelService.getChannel(rid);
+      // 移除房间 -> 向该房间内所有成员广播解散房间 -> 销毁通信频道
+      this.destroyRoom(rid, () => {
+        channel.pushMessage("onDismissRoom", "dismissRoom");
+        channelService.destroyChannel(rid);
+      });
+    } catch (e) {
+      console.error(e);
+    }
+  }
+
+  /**
+   * 检查房间帧同步是否开始
+   * @param rid 房间id
+   */
+  public async checkRoomIsStartFrame(rid: string): Promise<Cola.FrameSyncState> {
+    try {
+      const room = updateInstance.findRoom(rid);
+      if (!room) throw Error(`gameRemote.ts checkRoomIsStartFrame() 检查房间帧同步是否开始 找不到room rid: ${rid}`);
+      return room.frameSyncState;
+    } catch (e) {
+      console.error(e);
+    }
   }
 }

@@ -59,6 +59,24 @@ export namespace Cola {
     }
 
     /**
+     * @name 获取房间列表参数
+     * @field {string} gameId  游戏ID
+     * @field {number} pageNo  页号，从1开始
+     * @field {number} pageSize  每页数量，默认值为10，最大值为20
+     * @field {string} roomType  房间类型（可选）
+     * @field {boolean} isDesc  是否按照房间创建时间倒序（可选）
+     * @field {boolean} filterPrivate 是否需要过滤私有房间（可选）true: 返回房间列表中不包含私有房间，false: 返回房间列表中包含私有房间
+     */
+    export interface GetRoomList {
+      gameId: string;
+      pageNo: number;
+      pageSize: number;
+      roomType?: string;
+      isDesc?: boolean;
+      filterPrivate?: boolean;
+    }
+
+    /**
      * @name 修改玩家状态参数
      * @field {number} customPlayerStatus  自定义玩家状态
      */
@@ -90,6 +108,15 @@ export namespace Cola {
     export interface LeaveRoomMsg {
       rid: string;
     }
+
+    /**
+     * @name 解散房间请求参数
+     * @field {string} rid 房间ID
+     */
+    export interface DismissRoomMsg {
+      rid: string;
+    }
+
     /**
      * @name 在房间内向指定用户发送消息
      * @field {string[]} uidList 用户uid数组
@@ -131,6 +158,13 @@ export namespace Cola {
       message: string;
       data: Room;
     }
+    export interface GetRoomList {
+      code: number;
+      message: string;
+      data: Room[];
+      pageNo: number;
+      pageSize: number;
+    }
     export interface ChangeCustomPlayerStatus {
       code: number;
       message: string;
@@ -171,7 +205,8 @@ export namespace Cola {
     | "onChat"
     | "onRecvFrame"
     | "onStartFrameSync"
-    | "onStopFrameSync";
+    | "onStopFrameSync"
+    | "onDismissRoom";
 
   export namespace EventRes {
     export interface OnRoomCreate extends Room {}
@@ -226,6 +261,10 @@ export namespace Cola {
      * @name 房间停止帧同步事件
      */
     export type onStopFrameSync = "stopFrame";
+    /**
+     * @name 房间解散事件
+     */
+    export type onDismissRoom = "dismissRoom";
   }
   export namespace Params {
     /**

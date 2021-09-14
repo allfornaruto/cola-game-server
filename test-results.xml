@@ -1,21 +1,39 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<testsuites name="jest tests" tests="8" failures="0" time="24.435">
-  <testsuite name="undefined" errors="0" failures="0" skipped="0" timestamp="2021-09-07T09:25:38" time="24.21" tests="8">
-    <testcase classname=" 用户A创建房间room-1977，用户B在大厅监听该房间的创建" name=" 用户A创建房间room-1977，用户B在大厅监听该房间的创建" time="5.32">
+<testsuites name="jest tests" tests="11" failures="2" time="24.373">
+  <testsuite name="undefined" errors="0" failures="2" skipped="0" timestamp="2021-09-14T10:31:25" time="24.154" tests="11">
+    <testcase classname=" 用户A创建房间room-1977，用户B在大厅监听该房间的创建" name=" 用户A创建房间room-1977，用户B在大厅监听该房间的创建" time="5.229">
     </testcase>
-    <testcase classname=" 用户A创建房间room-1977，用户B进入该房间，用户A监听用户B进入/离开房间的事件" name=" 用户A创建房间room-1977，用户B进入该房间，用户A监听用户B进入/离开房间的事件" time="1.154">
+    <testcase classname=" 用户A创建房间room-1977，用户B进入该房间，用户A监听用户B进入/离开房间的事件" name=" 用户A创建房间room-1977，用户B进入该房间，用户A监听用户B进入/离开房间的事件" time="1.137">
     </testcase>
-    <testcase classname=" 用户A创建房间room-1977，用户B进入该房间，用户A发送消息，用户B监听消息" name=" 用户A创建房间room-1977，用户B进入该房间，用户A发送消息，用户B监听消息" time="1.124">
+    <testcase classname=" 用户A创建房间room-1977，用户B进入该房间，用户A发送消息，用户B监听消息" name=" 用户A创建房间room-1977，用户B进入该房间，用户A发送消息，用户B监听消息" time="1.122">
     </testcase>
-    <testcase classname=" 用户A创建房间room-1977，用户B进入该房间，房主（用户A）修改房间信息，用户B监听房间修改消息，用户B尝试修改房间信息，由于用户B不是房主，所以修改信息失败" name=" 用户A创建房间room-1977，用户B进入该房间，房主（用户A）修改房间信息，用户B监听房间修改消息，用户B尝试修改房间信息，由于用户B不是房主，所以修改信息失败" time="0.084">
+    <testcase classname=" 用户A创建房间room-1977，用户B进入该房间，房主（用户A）修改房间信息，用户B监听房间修改消息，用户B尝试修改房间信息，由于用户B不是房主，所以修改信息失败" name=" 用户A创建房间room-1977，用户B进入该房间，房主（用户A）修改房间信息，用户B监听房间修改消息，用户B尝试修改房间信息，由于用户B不是房主，所以修改信息失败" time="0.08">
     </testcase>
-    <testcase classname=" 用户A创建公共房间room-1977，并禁止其他用户进入房间，用户B尝试进入该房间，无法进入" name=" 用户A创建公共房间room-1977，并禁止其他用户进入房间，用户B尝试进入该房间，无法进入" time="1.12">
+    <testcase classname=" 用户A创建房间room-1977，用户B进入该房间，用户A开启帧同步, 用户A与用户B监听房间帧同步开启事件，随后用户A停止帧同步，用户A与用户B监听房间帧同步停止事件" name=" 用户A创建房间room-1977，用户B进入该房间，用户A开启帧同步, 用户A与用户B监听房间帧同步开启事件，随后用户A停止帧同步，用户A与用户B监听房间帧同步停止事件" time="0.143">
     </testcase>
-    <testcase classname=" 用户A创建房间room-1977，用户B进入该房间，用户A开启帧同步, 用户A与用户B监听房间帧同步开启事件，随后用户A停止帧同步，用户A与用户B监听房间帧同步停止事件" name=" 用户A创建房间room-1977，用户B进入该房间，用户A开启帧同步, 用户A与用户B监听房间帧同步开启事件，随后用户A停止帧同步，用户A与用户B监听房间帧同步停止事件" time="0.119">
+    <testcase classname=" 用户A创建房间room-1977，用户B进入该房间，用户A开启帧同步并发送帧消息(进度0, 10, 20, ...100)，用户B监听帧消息" name=" 用户A创建房间room-1977，用户B进入该房间，用户A开启帧同步并发送帧消息(进度0, 10, 20, ...100)，用户B监听帧消息" time="11.315">
     </testcase>
-    <testcase classname=" 用户A创建房间room-1977，用户B进入该房间，用户A开启帧同步并发送帧消息(进度0, 10, 20, ...100)，用户B监听帧消息" name=" 用户A创建房间room-1977，用户B进入该房间，用户A开启帧同步并发送帧消息(进度0, 10, 20, ...100)，用户B监听帧消息" time="11.208">
+    <testcase classname=" 用户A创建房间room-1977，用户B进入该房间，用户A根据房间id查询房间数据" name=" 用户A创建房间room-1977，用户B进入该房间，用户A根据房间id查询房间数据" time="0.112">
     </testcase>
-    <testcase classname=" 用户A创建房间room-1977，用户B进入该房间，用户A根据房间id查询房间数据" name=" 用户A创建房间room-1977，用户B进入该房间，用户A根据房间id查询房间数据" time="0.126">
+    <testcase classname=" 用户A创建房间room-1977，用户B进入该房间，用户A解散该房间，用户A/B监听房间解散事件" name=" 用户A创建房间room-1977，用户B进入该房间，用户A解散该房间，用户A/B监听房间解散事件" time="0.112">
+    </testcase>
+    <testcase classname=" 用户A创建公开房间room-1977，用户B在大厅查询(不过滤私有房间)房间列表，可以查询到room-1977房间。用户A将其改为私有房间后，用户B再次查询(不过滤私有房间)，无法查询到该房间" name=" 用户A创建公开房间room-1977，用户B在大厅查询(不过滤私有房间)房间列表，可以查询到room-1977房间。用户A将其改为私有房间后，用户B再次查询(不过滤私有房间)，无法查询到该房间" time="0.127">
+      <failure>Error: expect(received).toBe(expected) // Object.is equality
+
+Expected: &quot;7b1669a6-ad9b-45e3-b256-fbad976d4521&quot;
+Received: &quot;9d45fafd-1ff4-4ef5-86da-d281963d7d11&quot;
+    at C:\Users\Naruto\Desktop\code\cola-game-server\tests\cola.test.ts:522:29
+    at processTicksAndRejections (internal/process/task_queues.js:93:5)</failure>
+    </testcase>
+    <testcase classname=" 用户A创建私有房间room-1977，用户B在大厅查询(不过滤私有房间)房间列表，无法查询到room-1977房间。用户A将其改为公共房间后，用户B再次查询(不过滤私有房间)，可以查询到该房间" name=" 用户A创建私有房间room-1977，用户B在大厅查询(不过滤私有房间)房间列表，无法查询到room-1977房间。用户A将其改为公共房间后，用户B再次查询(不过滤私有房间)，可以查询到该房间" time="0.106">
+      <failure>Error: expect(received).toBe(expected) // Object.is equality
+
+Expected: 0
+Received: 1
+    at C:\Users\Naruto\Desktop\code\cola-game-server\tests\cola.test.ts:564:29
+    at processTicksAndRejections (internal/process/task_queues.js:93:5)</failure>
+    </testcase>
+    <testcase classname=" 用户A创建公共房间room-1977，并禁止其他用户进入房间，用户B尝试进入该房间，无法进入" name=" 用户A创建公共房间room-1977，并禁止其他用户进入房间，用户B尝试进入该房间，无法进入" time="1.105">
     </testcase>
   </testsuite>
 </testsuites>

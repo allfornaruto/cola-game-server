@@ -76,7 +76,7 @@ export class Handler {
   }
 
   // 通知后端服务器把用户从大厅channel、房间channel里移除，游戏未开始时，如果房主退出了房间channel，则销毁该房间
-  private onUserLeave(session: FrontendSession) {
+  private async onUserLeave(session: FrontendSession) {
     if (!session || !session.uid) return;
 
     const hallRid = session.get("gameId");
@@ -89,17 +89,20 @@ export class Handler {
       console.log(`将该用户从游戏大厅中移除, uid=${uid}`);
       this.app.rpc.game.gameRemote.kick.route(session, true)(uid, this.app.get("serverId"), hallRid);
     }
-    // 将该用户从房间内移除
-    if (rid) {
-      console.log(`将该用户从房间内移除, uid=${uid}`);
+    // 非房主, 将该用户从房间内移除
+    if (rid && !ownRid) {
+      console.log(`非房主，将该用户从房间内移除, uid=${uid}`);
       this.app.rpc.game.gameRemote.kick.route(session, true)(uid, this.app.get("serverId"), rid);
     }
-    // 该用户是房主，游戏未开始则解散该房间
-    if (!!ownRid) {
-      // todo 不确定是否需要踢出所有房间内用户
-      this.app.get("channelService").destroyChannel(ownRid);
-      this.app.rpc.game.gameRemote.destroyRoom.route(session, true)(rid);
-      console.log(`房主(${uid})离开房间，房间已解散，rid = ${ownRid}`);
+    // 房主，游戏未开始则解散该房间
+    else if (rid && ownRid) {
+      const isStart = await this.app.rpc.game.gameRemote.checkRoomIsStartFrame.route(session, false)(rid);
+      if (isStart === Cola.FrameSyncState.STOP) {
+        console.log(`房主，游戏未开始则解散该房间`);
+        this.app.rpc.game.gameRemote.dismissRoom.route(session, true)(rid);
+      }
+      console.log(`房主，将房主从房间中移除`);
+      this.app.rpc.game.gameRemote.kick.route(session, true)(uid, this.app.get("serverId"), rid);
     }
   }
 }

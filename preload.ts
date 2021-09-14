@@ -30,11 +30,11 @@ export function preload() {
 
   // 捕获普通异常
   process.on("uncaughtException", function (err) {
-    console.error(pinus.app.getServerId(), "uncaughtException Caught exception: ", err);
+    console.error(err);
   });
 
   // 捕获async异常
   process.on("unhandledRejection", (reason: any, p) => {
-    console.error(pinus.app.getServerId(), "Caught Unhandled Rejection at:", p, "reason:", reason);
+    console.error(reason);
   });
 }

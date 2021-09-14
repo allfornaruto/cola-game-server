@@ -1,5 +1,5 @@
 import { Room } from "./model/Room";
-import constants from "../util/constants";
+import { Constants } from "../util/constants";
 import Command from "./model/Command";
 import { Cola } from "../../types/Cola";
 
@@ -10,6 +10,67 @@ class Updater {
   private rooms: Map<RoomId, Room> = new Map<string, Room>();
   // 上次更新时间（用来控制update更新）
   private lateUpdate: number = 0;
+
+  /**
+   * 获取房间列表
+   * @param {string} params.gameId 游戏Id
+   * @param {number} params.pageNo 页号, 默认为1
+   * @param {number} params.pageSize 每页数量, 默认值为10，最大值为20
+   * @param {string} params.roomType 房间类型, 可选参数
+   * @param {boolean} params.isDesc 是否按照房间创建时间倒序, 可选参数
+   * @param {boolean} filterPrivate 是否需要过滤私有房间（可选）true: 返回房间列表中不包含私有房间，false: 返回房间列表中包含私有房间
+   * @returns {Room[]} 房间列表
+   */
+  public getRoomList(params: {
+    gameId: string;
+    pageNo: number;
+    pageSize: number;
+    roomType?: string;
+    isDesc?: boolean;
+    filterPrivate?: boolean;
+  }): Room[] {
+    try {
+      let { gameId, pageNo, pageSize, roomType, isDesc, filterPrivate } = params;
+      // 默认为1
+      if (pageNo < 1) pageNo = 1;
+      // 默认为10，最大20
+      if (pageSize < 1) pageSize = 10;
+      if (pageSize > 20) pageSize = 20;
+
+      let tmp: Room[] = [];
+      for (const [roomId, room] of this.rooms) {
+        // 返回房间列表中不包含私有房间
+        if (filterPrivate) {
+          if (room.gameId === gameId && room.isPrivate === false) {
+            if (roomType) {
+              if (room.type === roomType) tmp.push(room);
+            } else {
+              tmp.push(room);
+            }
+          }
+        }
+        // 返回房间列表中包含私有房间
+        else {
+          if (room.gameId === gameId) {
+            if (roomType) {
+              if (room.type === roomType) tmp.push(room);
+            } else {
+              tmp.push(room);
+            }
+          }
+        }
+      }
+
+      // 按房间创建时间倒序
+      if (isDesc) {
+        tmp = tmp.sort((a, b) => b.createTime - a.createTime);
+      }
+
+      return tmp.splice((pageNo - 1) * pageSize, pageSize);
+    } catch (e) {
+      console.error(e);
+    }
+  }
 
   /**
    * 通过rid找到目标房间
@@ -79,8 +140,8 @@ class Updater {
       if (room.frameSyncState === Cola.FrameSyncState.STOP) return;
       // 大于一帧的间隔
       room.stepUpdateTime += dt;
-      if (room.stepUpdateTime >= constants.STEP_INTERVAL) {
-        room.stepUpdateTime -= constants.STEP_INTERVAL;
+      if (room.stepUpdateTime >= Constants.stepInterval) {
+        room.stepUpdateTime -= Constants.stepInterval;
         room.stepTime++;
         this.stepUpdate(room);
       }

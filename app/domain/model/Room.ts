@@ -2,7 +2,7 @@ import { Channel } from "pinus";
 import Command from "./Command";
 import { Player } from "./Player";
 import { v4 as uuid } from "uuid";
-import constants from "../../util/constants";
+import { Constants } from "../../util/constants";
 import { Cola } from "../../../types/Cola";
 
 /**
@@ -74,7 +74,7 @@ export class Room {
   public playerList: Player[];
   public teamList: Cola.TeamInfo[];
   public frameSyncState: Cola.FrameSyncState = Cola.FrameSyncState.STOP;
-  public frameRate: number = constants.STEP_INTERVAL;
+  public frameRate: number = Constants.stepInterval;
   public createTime: number = Math.floor(+new Date() / 1000);
   public startGameTime: number;
   public isForbidJoin: boolean = false;
@@ -157,9 +157,9 @@ export class Room {
   public changeRoomInfo(params: ChangeRoomInfoParams): Cola.Room {
     if (params.name) this.name = params.name;
     if (params.owner) this.owner = params.owner;
-    if (params.isPrivate) this.isPrivate = params.isPrivate;
+    if (typeof params.isPrivate === "boolean") this.isPrivate = params.isPrivate;
     if (params.customProperties) this.customProperties = params.customProperties;
-    if (params.isForbidJoin) this.isForbidJoin = params.isForbidJoin;
+    if (typeof params.isForbidJoin === "boolean") this.isForbidJoin = params.isForbidJoin;
     return this.getRoomInfo();
   }
 
@@ -177,13 +177,13 @@ export class Room {
    * 开始帧同步
    */
   public startFrameSync() {
-    this.frameSyncState = 1;
+    this.frameSyncState = Cola.FrameSyncState.START;
   }
 
   /**
    * 停止帧同步
    */
   public stopFrameSync() {
-    this.frameSyncState = 0;
+    this.frameSyncState = Cola.FrameSyncState.STOP;
   }
 }

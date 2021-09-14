@@ -258,6 +258,36 @@ export class GameHandler {
   }
 
   /**
+   * 获取房间列表
+   * @param {Cola.Request.GetRoomList} msg 获取房间列表请求参数
+   * @param {Object} session
+   */
+  async getRoomList(msg: Cola.Request.GetRoomList, session: BackendSession): Promise<Cola.Response.GetRoomList> {
+    const { gameId, pageNo, pageSize, roomType, isDesc } = msg;
+    try {
+      const rooms = updateInstance.getRoomList({ gameId, pageNo, pageSize, roomType, isDesc });
+      const data = rooms.map(room => room.getRoomInfo());
+
+      return {
+        code: 200,
+        message: "",
+        data,
+        pageNo,
+        pageSize,
+      };
+    } catch (e) {
+      console.error(e);
+      return {
+        code: 500,
+        message: `e.code=${e.code} | e.name=${e.name} | e.message=${e.message} | e.stack=${e.stack}`,
+        data: [],
+        pageNo,
+        pageSize,
+      };
+    }
+  }
+
+  /**
    * 房主修改房间信息
    * @description 修改成功后，房间内全部成员都会收到一条修改房间广播 onChangeRoom，Room实例将更新。
    * @description 只有房主有权限修改房间
@@ -423,17 +453,42 @@ export class GameHandler {
    * @param session
    */
   async leaveRoom(msg: Cola.Request.LeaveRoomMsg, session: BackendSession) {
-    let { rid } = msg;
-    console.log(`[begin] game.gameHandler.leaveRoom uid = ${session.uid} rid = ${rid}`);
-    const gameId = session.get("gameId");
-    if (rid === gameId) {
-      console.warn(`leaveRoom Warn(rid === gameId) rid = ${rid}`);
-      return;
-    }
-    // 将该用户从房间内移除
-    this.app.rpc.game.gameRemote.kick.route(session, true)(session.uid, this.app.get("serverId"), rid);
+    try {
+      let { rid } = msg;
+      console.log(`[begin] game.gameHandler.leaveRoom uid = ${session.uid} rid = ${rid}`);
+      const gameId = session.get("gameId");
+      if (rid === gameId) {
+        console.warn(`leaveRoom Warn(rid === gameId) rid = ${rid}`);
+        return;
+      }
+      // 将该用户从房间内移除
+      this.app.rpc.game.gameRemote.kick.route(session, true)(session.uid, this.app.get("serverId"), rid);
 
-    console.log(`[end] game.gameHandler.leaveRoom uid = ${session.uid} rid = ${rid}`);
+      console.log(`[end] game.gameHandler.leaveRoom uid = ${session.uid} rid = ${rid}`);
+    } catch (e) {
+      console.error(e);
+    }
+  }
+
+  /**
+   * 房主解散房间
+   * 只有房主有权限解散房间
+   * @param msg
+   * @param session
+   */
+  async dismissRoom(msg: Cola.Request.DismissRoomMsg, session: BackendSession) {
+    try {
+      let { rid } = msg;
+      const gameId = session.get("gameId");
+      if (rid === gameId) {
+        console.warn(`dismissRoom Warn(rid === gameId) rid = ${rid}`);
+        return;
+      }
+
+      this.app.rpc.game.gameRemote.dismissRoom.route(session, true)(rid);
+    } catch (e) {
+      console.error(e);
+    }
   }
 
   /**

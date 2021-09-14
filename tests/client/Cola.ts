@@ -124,6 +124,15 @@ export default class ColaClient {
   }
 
   /**
+   * 房主解散房间
+   * @param {string} rid 房间id
+   */
+  public dismissRoom(rid: string) {
+    const requestData: Cola.Request.DismissRoomMsg = { rid };
+    this.client.notify("game.gameHandler.dismissRoom", requestData);
+  }
+
+  /**
    * 根据房间ID获取房间信息
    * @param {Cola.Request.GetRoomByRoomId} params
    */
@@ -131,6 +140,23 @@ export default class ColaClient {
     return new Promise((resolve, reject) => {
       const requestData: Cola.Request.GetRoomByRoomId = params;
       this.client.request("game.gameHandler.getRoomByRoomId", requestData, (res: Cola.Response.GetRoomByRoomId) => {
+        if (res.code === 200) {
+          resolve(res.data);
+        } else {
+          reject(res);
+        }
+      });
+    });
+  }
+
+  /**
+   * 获取房间列表
+   * @param {Cola.Request.GetRoomList} params
+   */
+  public getRoomList(params: Cola.Request.GetRoomList): Promise<Cola.Room[]> {
+    return new Promise((resolve, reject) => {
+      const requestData: Cola.Request.GetRoomList = params;
+      this.client.request("game.gameHandler.getRoomList", requestData, (res: Cola.Response.GetRoomList) => {
         if (res.code === 200) {
           resolve(res.data);
         } else {
