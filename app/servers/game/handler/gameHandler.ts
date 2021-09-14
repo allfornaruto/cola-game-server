@@ -263,9 +263,9 @@ export class GameHandler {
    * @param {Object} session
    */
   async getRoomList(msg: Cola.Request.GetRoomList, session: BackendSession): Promise<Cola.Response.GetRoomList> {
-    const { gameId, pageNo, pageSize, roomType, isDesc } = msg;
+    const { gameId, pageNo, pageSize, roomType, isDesc, filterPrivate } = msg;
     try {
-      const rooms = updateInstance.getRoomList({ gameId, pageNo, pageSize, roomType, isDesc });
+      const rooms = updateInstance.getRoomList({ gameId, pageNo, pageSize, roomType, isDesc, filterPrivate });
       const data = rooms.map(room => room.getRoomInfo());
 
       return {
