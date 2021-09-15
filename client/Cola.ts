@@ -1,5 +1,5 @@
 import * as pinus from "./PinusForEgret";
-import { Cola } from "../../types/Cola";
+import { Cola } from "../types/Cola";
 
 export default class ColaClient {
   private gameId: string;
@@ -51,6 +51,17 @@ export default class ColaClient {
           console.error(e);
         }
       });
+    } catch (e) {
+      console.error(e);
+    }
+  }
+
+  /**
+   * 输出日志格式化
+   */
+  public log(message: string, payload?: object) {
+    try {
+      console.log(JSON.stringify(Object.assign({}, this.playerInitInfo, { message, payload: payload ? JSON.stringify(payload) : "" })));
     } catch (e) {
       console.error(e);
     }

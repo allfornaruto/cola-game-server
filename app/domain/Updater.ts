@@ -31,6 +31,11 @@ class Updater {
   }): Room[] {
     try {
       let { gameId, pageNo, pageSize, roomType, isDesc, filterPrivate } = params;
+
+      console.log(
+        `Updater.ts gameId: ${gameId}, pageNo: ${pageNo}, pageSize: ${pageSize}, roomType: ${roomType}, isDesc: ${isDesc}, filterPrivate: ${filterPrivate}`
+      );
+
       // 默认为1
       if (pageNo < 1) pageNo = 1;
       // 默认为10，最大20
@@ -39,12 +44,17 @@ class Updater {
 
       let tmp: Room[] = [];
       for (const [roomId, room] of this.rooms) {
+        console.log(`Updater.ts getRoomList() room.name: ${room.name}`);
         // 返回房间列表中不包含私有房间
         if (filterPrivate) {
           if (room.gameId === gameId && room.isPrivate === false) {
             if (roomType) {
-              if (room.type === roomType) tmp.push(room);
+              if (room.type === roomType) {
+                console.log(`Updater.ts 1 push room.name: ${room.name}`);
+                tmp.push(room);
+              }
             } else {
+              console.log(`Updater.ts 2 push room.name: ${room.name}`);
               tmp.push(room);
             }
           }
@@ -53,8 +63,12 @@ class Updater {
         else {
           if (room.gameId === gameId) {
             if (roomType) {
-              if (room.type === roomType) tmp.push(room);
+              if (room.type === roomType) {
+                console.log(`Updater.ts 3 push room.name: ${room.name}`);
+                tmp.push(room);
+              }
             } else {
+              console.log(`Updater.ts 4 push room.name: ${room.name}`);
               tmp.push(room);
             }
           }
@@ -66,7 +80,9 @@ class Updater {
         tmp = tmp.sort((a, b) => b.createTime - a.createTime);
       }
 
-      return tmp.splice((pageNo - 1) * pageSize, pageSize);
+      const result = tmp.splice((pageNo - 1) * pageSize, pageSize);
+      console.log(`Updater.ts result count: ${result.length}`);
+      return result;
     } catch (e) {
       console.error(e);
     }

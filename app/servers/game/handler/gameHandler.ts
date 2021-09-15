@@ -183,6 +183,16 @@ export class GameHandler {
       };
     }
 
+    // 查看房间是否已满员
+    if (room.playerList.length >= room.maxPlayers) {
+      console.warn(`房间已满, room.playerList.length = ${room.playerList.length}, room.maxPlayers = ${room.maxPlayers}`);
+      return {
+        code: 500,
+        message: `房间已满`,
+        data: null,
+      };
+    }
+
     // 创建player
     const uid = session.uid;
     const gameId = session.get("gameId");
@@ -295,6 +305,8 @@ export class GameHandler {
    * @param {Object} session
    */
   async changeRoom(msg: Cola.Request.ChangeRoomMsg, session: BackendSession): Promise<Cola.Response.ChangeRoom> {
+    console.log(`gameHandler.ts changeRoom() msg: ${JSON.stringify(msg)}`);
+
     const ownRoom = session.get("ownRoom");
     if (!ownRoom) {
       return {

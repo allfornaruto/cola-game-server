@@ -196,7 +196,7 @@ export namespace Cola {
     | "io-error"
     | "close"
     | "onKick"
-    | "heartbeat timeout"
+    | "heartBeatTimeout"
     | "onRoomCreate"
     | "onHallAdd"
     | "onRoomAdd"

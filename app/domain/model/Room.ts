@@ -151,15 +151,34 @@ export class Room {
   }
 
   /**
+   * 移除房间内的一位玩家
+   * @param uid string
+   * @returns 返回被移除的Player
+   */
+  public removePlayer(uid: string): null | Player {
+    const index = this.playerList.findIndex(player => player.uid === uid);
+    const players = this.playerList.splice(index, 1);
+    const player = players[0] ? players[0] : null;
+    return player;
+  }
+
+  /**
    * 修改房间信息
    * @param {ChangeRoomInfoParams} params 修改房间信息参数
    */
   public changeRoomInfo(params: ChangeRoomInfoParams): Cola.Room {
+    console.log(`Room.ts changeRoomInfo() params: ${JSON.stringify(params)}`);
     if (params.name) this.name = params.name;
     if (params.owner) this.owner = params.owner;
-    if (typeof params.isPrivate === "boolean") this.isPrivate = params.isPrivate;
+    if (typeof params.isPrivate === "boolean") {
+      this.isPrivate = params.isPrivate;
+      console.log(`Room.ts changeRoomInfo() this.isPrivate: ${this.isPrivate}`);
+    }
     if (params.customProperties) this.customProperties = params.customProperties;
-    if (typeof params.isForbidJoin === "boolean") this.isForbidJoin = params.isForbidJoin;
+    if (typeof params.isForbidJoin === "boolean") {
+      this.isForbidJoin = params.isForbidJoin;
+      console.log(`Room.ts changeRoomInfo() this.isForbidJoin: ${this.isForbidJoin}`);
+    }
     return this.getRoomInfo();
   }
 

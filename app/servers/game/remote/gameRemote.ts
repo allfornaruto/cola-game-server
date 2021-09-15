@@ -94,6 +94,15 @@ export class GameRemote {
     if (!!channel) {
       channel.leave(uid, sid);
     }
+
+    const targetRoom = updateInstance.findRoom(rid);
+
+    if (targetRoom) {
+      targetRoom.removePlayer(uid);
+      // 房间内无用户，则移除该房间
+      if (targetRoom.playerList.length === 0) updateInstance.removeRoom(rid);
+    }
+
     const param = {
       uid,
       rid,

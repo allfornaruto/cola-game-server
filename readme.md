@@ -72,7 +72,7 @@ cola.listen("io-error", event => console.log(event));
 // 连接关闭处理
 cola.listen("close", event => console.log(event));
 // 心跳超时处理
-cola.listen("heartbeat timeout", event => console.log(event));
+cola.listen("heartBeatTimeout", event => console.log(event));
 // 监听其他玩家加入大厅
 cola.listen("onHallAdd", async (event: Cola.EventRes.OnHallAdd) => console.log(event));
 // 监听其他玩家创建房间
@@ -287,7 +287,7 @@ type Event =
   | "io-error"
   | "close"
   | "onKick"
-  | "heartbeat timeout"
+  | "heartBeatTimeout"
   | "onRoomCreate"
   | "onHallAdd"
   | "onRoomAdd"
