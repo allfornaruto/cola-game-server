@@ -1,9 +1,10 @@
-﻿# cola-game-server
+﻿# cola-game-server: 1.1.0
 
 ## 安装、运行、测试
 
 ```shell
 npm install
+npm run build
 # 运行并测试
 pinus start --directory dist --env test
 npm run test
@@ -12,14 +13,26 @@ npm run test
 pinus start --directory dist --env development
 pinus start --directory dist --env production --daemon
 
-# 查看端口占用状态
+# 关闭服务器使用
+pinus stop
+
+# 当服务器异常关闭导致端口被占用，使用以下命令查看端口占用状态，并杀死进行
 netstat -ano|findstr [port]
 ```
 
+### ssl 支持
+
+1. 在根目录下新建 key 文件夹，放入 ssl 证书
+2. 修改 app.ts 内 ssl 相关内容
+
+### 如果不需要开启 ssl
+
+1. 注释 app.ts 内 ssl 相关内容
+
 ## 客户端文档
 
-- test/client
-- types/Cola.ts
+- 客户端文件在 client 目录下
+- 类型文件在 types/Cola.ts
 
 ### 初始化并与服务器建立 WebSocket 连接
 
@@ -87,12 +100,14 @@ cola.listen("onChat", async (event: Cola.EventRes.OnChat) => console.log(event))
 cola.listen("onChangeRoom", async (event: Cola.EventRes.OnChangeRoom) => console.log(event));
 // 监听玩家自定义状态变化
 cola.listen("onChangeCustomPlayerStatus", async (event: Cola.EventRes.OnChangeCustomPlayerStatus) => console.log(event));
-// 房间帧消息广播事件
+// 监听房间帧消息广播事件
 cola.listen("onRecvFrame", async (event: Cola.EventRes.onRecvFrame) => console.log(event));
-// 房间开始帧同步事件
+// 监听房间开始帧同步事件
 cola.listen("onStartFrameSync", async (event: Cola.EventRes.onStartFrameSync) => console.log(event));
-// 房间停止帧同步事件
+// 监听房间停止帧同步事件
 cola.listen("onStopFrameSync", async (event: Cola.EventRes.onStopFrameSync) => console.log(event));
+// 监听房间解散事件
+cola.listen("onDismissRoom", async (event: Cola.EventRes.onDismissRoom) => console.log(event));
 // 取消监听某事件
 cola.listenOff("", async (event: any) => console.log(event));
 ```
@@ -170,6 +185,28 @@ const roomInfo: Cola.Room = await cola.enterRoom({
 });
 ```
 
+### 离开房间
+
+> leaveRoom(rid: string)
+
+- rid `{string}` 房间 ID
+
+```typescript
+const rid = "123";
+cola.leaveRoom(rid);
+```
+
+### 房主解散房间
+
+> dismissRoom(rid: string)
+
+- rid `{string}` 房间 ID
+
+```typescript
+const rid = "123";
+cola.dismissRoom(rid);
+```
+
 ### 根据房间 ID 获取房间信息
 
 > getRoomByRoomId(params: Cola.Request.GetRoomByRoomId): Promise<Cola.Room>
@@ -179,6 +216,28 @@ const roomInfo: Cola.Room = await cola.enterRoom({
 
 ```typescript
 const roomInfo = await cola.getRoomByRoomId({ rid: "123" });
+```
+
+### 获取房间列表
+
+> getRoomList(params: Cola.Request.GetRoomList): Promise<Cola.Room[]>
+
+- params `{Cola.Request.GetRoomList}` 请求参数
+  - gameId `{string}` 游戏 ID
+  - pageNo `{number}` 页号，从 1 开始
+  - pageSize `{number}` 每页数量，默认值为 10，最大值为 20
+  - roomType `{string}` 业务方自定义的房间类型（可选）
+  - isDesc `{boolean}` 是否按照房间创建时间倒序（可选）
+  - filterPrivate `{boolean}` 是否需要过滤私有房间（可选）true: 返回房间列表中不包含私有房间，false: 返回房间列表中包含私有房间
+
+```typescript
+const roomList = await cola.getRoomList({
+  gameId: "dnf",
+  roomType: "0",
+  pageNo: 1,
+  pageSize: 10,
+  filterPrivate: false,
+});
 ```
 
 ### 房主修改房间信息
@@ -230,11 +289,12 @@ const status: Cola.Status = await cola.startFrameSync();
 
 - 必须在调用 startFrameSync 之后才可调用该方法
 
+> sendFrame(data: string): Promise<Cola.Status>
+
+- data `{string}` 自定义数据
+
 ```typescript
-const status: Cola.Status = await cola.startFrameSync();
-if (status) {
-  cola.sendFrame(JSON.stringify({ progress: 99 }));
-}
+const sendFrameRes = await cola.sendFrame(JSON.stringify({ progress: 99 }));
 ```
 
 ### 停止帧同步
@@ -257,383 +317,4 @@ const status: Cola.Status = await cola.stopFrameSync();
 
 ```typescript
 const sendResult: Cola.Status = await cola.sendMsg(["222222"], "Hello cola");
-```
-
-## Cola 类型文档
-
-### Init
-
-> Cola 客户端初始化参数
-
-```typescript
-interface Init {
-  // 游戏ID
-  gameId: string;
-  // 玩家初始化信息
-  PlayerInitInfo: PlayerInitInfo;
-  // 游戏服务器地址
-  gateHost: string;
-  // 游戏服务器端口
-  gatePort: number;
-}
-```
-
-### Event
-
-> 自定义事件名称
-
-```typescript
-type Event =
-  | "io-error"
-  | "close"
-  | "onKick"
-  | "heartBeatTimeout"
-  | "onRoomCreate"
-  | "onHallAdd"
-  | "onRoomAdd"
-  | "onChangeRoom"
-  | "onChangeCustomPlayerStatus"
-  | "onChat"
-  | "onRecvFrame"
-  | "onStartFrameSync"
-  | "onStopFrameSync";
-```
-
-#### EventRes.OnKick
-
-> 玩家离开房间事件
-
-```typescript
-interface OnKick {
-  // 用户uid
-  uid: string;
-  // 房间id
-  rid: string;
-}
-```
-
-#### EventRes.OnRoomCreate
-
-> 房间创建事件
-
-```typescript
-interface OnRoomCreate extends Room {}
-```
-
-#### EventRes.OnHallAdd
-
-> 玩家加入大厅事件
-
-```typescript
-interface OnHallAdd extends PlayerInitInfo {}
-```
-
-#### EventRes.OnRoomAdd
-
-> 玩家加入房间事件
-
-```typescript
-interface OnRoomAdd extends PlayerInfo {}
-```
-
-#### EventRes.OnChangeRoom
-
-> 房间信息变更事件
-
-```typescript
-interface OnChangeRoom extends Room {}
-```
-
-#### EventRes.onChangeCustomPlayerStatus
-
-> 玩家自定义状态变更事件
-
-```typescript
-interface OnChangeCustomPlayerStatus {
-  // 玩家uid
-  changePlayerId: string;
-  // 玩家自定义状态
-  customPlayerStatus: number;
-  // 房间信息
-  roomInfo: Room;
-}
-```
-
-#### EventRes.OnChat
-
-> 玩家发送消息事件
-
-```typescript
-interface OnChat {
-  // 消息内容
-  msg: string;
-  // 消息发送者uid
-  from: string;
-  // 消息接收者uid数组
-  target: string[];
-}
-```
-
-#### EventRes.onRecvFrame
-
-> 房间帧消息广播事件
-
-```typescript
-interface Frame {
-  id: number;
-  items: Command[];
-  isReplay: boolean;
-}
-interface onRecvFrame extends Frame {}
-```
-
-#### EventRes.onStartFrameSync
-
-> 房间开始帧同步事件
-
-```typescript
-type onStartFrameSync = "startFrame";
-```
-
-#### EventRes.onStartFrameSync
-
-> 房间停止帧同步事件
-
-```typescript
-type onStopFrameSync = "stopFrame";
-```
-
-### Params
-
-#### Params.CreateRoom
-
-> 创建房间请求参数
-
-```typescript
-interface CreateRoom {
-  // 房间名称
-  name: string;
-  // 房间类型
-  type: string;
-  // 创建房间方式
-  createType: CreateRoomType;
-  // 房间最大玩家数量
-  maxPlayers: number;
-  // 是否私有，私有房间无法被匹配到，只可通过 rid 进入
-  isPrivate: boolean;
-  // 房间自定义属性
-  customProperties: string;
-  // 团队属性
-  teamList: TeamInfo[];
-  // 加入房间用户额外信息参数
-  playerInfoExtra: PlayerInfoExtra;
-}
-```
-
-#### Params.EnterRoom
-
-> 进入房间请求参数
-
-```typescript
-export interface EnterRoom {
-  // 房间ID
-  rid: string;
-  // 加入房间用户额外信息参数
-  playerInfoExtra: PlayerInfoExtra;
-}
-```
-
-#### Params.ChangeRoom
-
-> 房主修改房间信息
-
-```typescript
-interface ChangeRoom {
-  // 房间名称（可选）
-  name?: string;
-  // 房主ID（可选）
-  owner?: string;
-  // 是否私有（可选），私有房间无法被匹配到，只可通过 rid 进入
-  isPrivate?: boolean;
-  // 自定义房间属性（可选）
-  customProperties?: string;
-  // 是否禁止加入房间（可选）
-  isForbidJoin?: boolean;
-}
-```
-
-### CreateRoomType
-
-> 创建房间方式
-
-```typescript
-enum CreateRoomType {
-  // 普通创建
-  COMMON_CREATE = 0,
-  // 匹配创建
-  MATCH_CREATE = 1,
-}
-```
-
-### TeamInfo
-
-> 团队属性
-
-```typescript
-interface TeamInfo {
-  // 队伍ID
-  id: string;
-  // 队伍名称
-  name: string;
-  // 队伍最小人数
-  minPlayers: number;
-  // 队伍最大人数
-  maxPlayers: number;
-}
-```
-
-### PlayerInfoExtra
-
-> 加入房间用户额外信息参数
-
-```typescript
-interface PlayerInfoExtra {
-  // 房间内队伍id
-  teamId: string;
-  // 自定义玩家状态
-  customPlayerStatus: number;
-  // 自定义玩家信息
-  customProfile: string;
-  // 匹配属性列表
-  matchAttributes: MatchAttribute[];
-}
-```
-
-### PlayerInitInfo
-
-> 玩家初始化信息
-
-```typescript
-interface PlayerInitInfo {
-  // 用户uid
-  uid: string;
-  // 游戏id
-  gameId: string;
-  // 游戏用户昵称
-  name: string;
-}
-```
-
-### PlayerInfo
-
-> 玩家信息参数
-
-```typescript
-interface PlayerInfo {
-  // 用户uid
-  uid: string;
-  // 游戏id
-  gameId: string;
-  // 游戏用户昵称
-  name: string;
-  // 房间内队伍id
-  teamId: string;
-  // 自定义玩家状态
-  customPlayerStatus: number;
-  // 自定义玩家信息
-  customProfile: string;
-  // 匹配属性列表
-  matchAttributes: MatchAttribute[];
-}
-```
-
-### MatchAttribute
-
-> 匹配属性
-
-```typescript
-interface MatchAttribute {
-  // 属性名称
-  name: string;
-  // 属性值
-  value: number;
-}
-```
-
-### Room
-
-> 房间信息
-
-```typescript
-interface Room {
-  // 房间ID
-  rid: string;
-  // 游戏ID
-  gameId: string;
-  // 房间名称
-  name: string;
-  // 房间类型
-  type: string;
-  // 创建房间方式
-  createType: CreateRoomType;
-  // 房间最大玩家数量
-  maxPlayers: number;
-  // 房主Id
-  owner: string;
-  // 是否私有，私有房间无法被匹配到，只可通过 rid 进入
-  isPrivate: boolean;
-  // 房间自定义属性
-  customProperties: string;
-  // 玩家列表
-  playerList: PlayerInfo[];
-  // 团队属性
-  teamList: TeamInfo[];
-  // 房间帧同步状态
-  frameSyncState: FrameSyncState;
-  // 帧率
-  frameRate: number;
-  // 房间创建时的时间戳（单位：秒）
-  createTime: number;
-  // 开始帧同步时的时间戳（单位：秒）
-  startGameTime: number;
-  // 是否禁止加入房间
-  isForbidJoin: boolean;
-}
-```
-
-### CreateRoomType
-
-> 创建房间方式
-
-```typescript
-enum CreateRoomType {
-  // 普通创建
-  COMMON_CREATE = 0,
-  // 匹配创建
-  MATCH_CREATE = 1,
-}
-```
-
-### FrameSyncState
-
-> 房间帧同步状态
-
-```typescript
-enum FrameSyncState {
-  // 未开始帧同步
-  STOP = 0,
-  // 已开始帧同步
-  START = 1,
-}
-```
-
-### Status
-
-> 接口调用状态
-
-```typescript
-interface Status {
-  // 成功or失败
-  status: boolean;
-}
 ```
